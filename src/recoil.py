@@ -10,185 +10,208 @@ import json
 import argparse
 #from sys import argv
 #from time import sleep, strftime
+import time
+
+from utils import log
 
 from ib.ext.Contract import Contract
 from ib.ext.EWrapper import EWrapper
 from ib.ext.EClientSocket import EClientSocket
 from ib.ext.ExecutionFilter import ExecutionFilter
 
+def showmessage(message, mapping):
+    try:
+        del(mapping['self'])
+    except (KeyError, ):
+        pass
+    mapping['msg'] = message
+    log.info(mapping)
 
-#def showmessage(message, mapping):
-#    try:
-#        del(mapping['self'])
-#    except (KeyError, ):
-#        pass
-#    items = list(mapping.items())
-#    items.sort()
-#    print(('### %s' % (message, )))
-#    for k, v in items:
-#        print(('    %s:%s' % (k, v)))
-#
-#
-#class ReferenceWrapper(EWrapper):
-#    def tickPrice(self, tickerId, field, price, canAutoExecute):
-#        showmessage('tickPrice', vars())
-#
-#    def tickSize(self, tickerId, field, size):
-#        showmessage('tickSize', vars())
-#
-#    def tickOptionComputation(self, tickerId, field, impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice):
-#        showmessage('tickOptionComputation', vars())
-#
-#    def tickGeneric(self, tickerId, tickType, value):
-#        showmessage('tickGeneric', vars())
-#
-#    def tickString(self, tickerId, tickType, value):
-#        showmessage('tickString', vars())
-#
-#    def tickEFP(self, tickerId, tickType, basisPoints, formattedBasisPoints, impliedFuture, holdDays, futureExpiry, dividendImpact, dividendsToExpiry):
-#        showmessage('tickEFP', vars())
-#
-#    def orderStatus(self, orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeId):
-#        showmessage('orderStatus', vars())
-#
-#    def openOrder(self, orderId, contract, order, state):
-#        showmessage('openOrder', vars())
-#
-#    def openOrderEnd(self):
-#        showmessage('openOrderEnd', vars())
-#
-#    def updateAccountValue(self, key, value, currency, accountName):
-#        showmessage('updateAccountValue', vars())
-#
-#    def updatePortfolio(self, contract, position, marketPrice, marketValue, averageCost, unrealizedPNL, realizedPNL, accountName):
-#        showmessage('updatePortfolio', vars())
-#
-#    def updateAccountTime(self, timeStamp):
-#        showmessage('updateAccountTime', vars())
-#
-#    def accountDownloadEnd(self, accountName):
-#        showmessage('accountDownloadEnd', vars())
-#
-#    def nextValidId(self, orderId):
-#        showmessage('nextValidId', vars())
-#
-#    def contractDetails(self, reqId, contractDetails):
-#        showmessage('contractDetails', vars())
-#
-#    def contractDetailsEnd(self, reqId):
-#        showmessage('contractDetailsEnd', vars())
-#
-#    def bondContractDetails(self, reqId, contractDetails):
-#        showmessage('bondContractDetails', vars())
-#
-#    def execDetails(self, reqId, contract, execution):
-#        showmessage('execDetails', vars())
-#
-#    def execDetailsEnd(self, reqId):
-#        showmessage('execDetailsEnd', vars())
-#
-#    def connectionClosed(self):
-#        showmessage('connectionClosed', {})
-#
-#    def error(self, id=None, errorCode=None, errorMsg=None):
-#        showmessage('error', vars())
-#
-#    def error_0(self, strvalue=None):
-#        showmessage('error_0', vars())
-#
-#    def error_1(self, id=None, errorCode=None, errorMsg=None):
-#        showmessage('error_1', vars())
-#
-#    def updateMktDepth(self, tickerId, position, operation, side, price, size):
-#        showmessage('updateMktDepth', vars())
-#
-#    def updateMktDepthL2(self, tickerId, position, marketMaker, operation, side, price, size):
-#        showmessage('updateMktDepthL2', vars())
-#
-#    def updateNewsBulletin(self, msgId, msgType, message, origExchange):
-#        showmessage('updateNewsBulletin', vars())
-#
-#    def managedAccounts(self, accountsList):
-#        showmessage('managedAccounts', vars())
-#
-#    def receiveFA(self, faDataType, xml):
-#        showmessage('receiveFA', vars())
-#
-#    def historicalData(self, reqId, date, open, high, low, close, volume, count, WAP, hasGaps):
-#        showmessage('historicalData', vars())
-#
-#    def scannerParameters(self, xml):
-#        showmessage('scannerParameters', vars())
-#
-#    def scannerData(self, reqId, rank, contractDetails, distance, benchmark, projection, legsStr):
-#        showmessage('scannerData', vars())
-#
-#    def accountDownloadEnd(self, accountName):
-#        showmessage('acountDownloadEnd', vars())
-#
-#    def commissionReport(self, commissionReport):
-#        showmessage('commissionReport', vars())
-#
-#    def contractDetailsEnd(self, reqId):
-#        showmessage('contractDetailsEnd', vars())
-#
-#    def currentTime(self, time):
-#        showmessage('currentTime', vars())
-#
-#    def deltaNeutralValidation(self, reqId, underComp):
-#        showmessage('deltaNeutralValidation', vars())
-#
-#    def execDetailsEnd(self, reqId):
-#        showmessage('execDetailsEnd', vars())
-#
-#    def fundamentalData(self, reqId, data):
-#        showmessage('fundamentalData', vars())
-#
-#    def marketDataType(self, reqId, marketDataType):
-#        showmessage('marketDataType', vars())
-#
-#    def openOrderEnd(self):
-#        showmessage('openOrderEnd', vars())
-#
-#    def realtimeBar(self, reqId, time, open, high, low, close, volume, wap, count):
-#        showmessage('realtimeBar', vars())
-#
-#    def scannerDataEnd(self, reqId):
-#        showmessage('scannerDataEnd', vars())
-#
-#    def tickEFP(self, tickerId, tickType, basisPoints, formattedBasisPoints, impliedFuture, holdDays, futureExpiry, dividendImpact, dividendsToExpiry):
-#        showmessage('tickEFP', vars())
-#
-#    def tickGeneric(self, tickerId, tickType, value):
-#        showmessage('tickGeneric', vars())
-#
-#    def tickSnapshotEnd(self, reqId):
-#        showmessage('tickSnapshotEnd', vars())
-#
-#    def error_0(self, strval):
-#        showmessage('error_0', vars())
-#
-#    def error_1(self, id, errorCode, errorMsg):
-#        showmessage('error_1', vars())
-#
-#    def position(self, account, contract, pos, avgCost):
-#        showmessage('position', vars())
-#
-#    def positionEnd(self):
-#        showmessage('positionEnd', vars())
-#
-#    def accountSummary(self, reqId, account, tag, value, currency):
-#        showmessage('accountSummary', vars())
-#
-#    def accountSummaryEnd(self, reqId):
-#        showmessage('accountSummaryEnd', vars())
-#
+class ReferenceWrapper(EWrapper):
+    def tickPrice(self, tickerId, field, price, canAutoExecute):
+        showmessage('tickPrice', vars())
+
+    def tickSize(self, tickerId, field, size):
+        showmessage('tickSize', vars())
+
+    def tickOptionComputation(self, tickerId, field, impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice):
+        showmessage('tickOptionComputation', vars())
+
+    def tickGeneric(self, tickerId, tickType, value):
+        showmessage('tickGeneric', vars())
+
+    def tickString(self, tickerId, tickType, value):
+        showmessage('tickString', vars())
+
+    def tickEFP(self, tickerId, tickType, basisPoints, formattedBasisPoints, impliedFuture, holdDays, futureExpiry, dividendImpact, dividendsToExpiry):
+        showmessage('tickEFP', vars())
+
+    def orderStatus(self, orderId, status, filled, remaining, avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeId):
+        showmessage('orderStatus', vars())
+
+    def openOrder(self, orderId, contract, order, state):
+        showmessage('openOrder', vars())
+
+    def openOrderEnd(self):
+        showmessage('openOrderEnd', vars())
+
+    def updateAccountValue(self, key, value, currency, accountName):
+        showmessage('updateAccountValue', vars())
+
+    def updatePortfolio(self, contract, position, marketPrice, marketValue, averageCost, unrealizedPNL, realizedPNL, accountName):
+        showmessage('updatePortfolio', vars())
+
+    def updateAccountTime(self, timeStamp):
+        showmessage('updateAccountTime', vars())
+
+    def accountDownloadEnd(self, accountName):
+        showmessage('accountDownloadEnd', vars())
+
+    def nextValidId(self, orderId):
+        showmessage('nextValidId', vars())
+
+    def contractDetails(self, reqId, contractDetails):
+        showmessage('contractDetails', vars())
+
+    def contractDetailsEnd(self, reqId):
+        showmessage('contractDetailsEnd', vars())
+
+    def bondContractDetails(self, reqId, contractDetails):
+        showmessage('bondContractDetails', vars())
+
+    def execDetails(self, reqId, contract, execution):
+        showmessage('execDetails', vars())
+
+    def execDetailsEnd(self, reqId):
+        showmessage('execDetailsEnd', vars())
+
+    def connectionClosed(self):
+        showmessage('connectionClosed', {})
+
+    def error(self, id=None, errorCode=None, errorMsg=None):
+        showmessage('error', vars())
+
+    def error_0(self, strvalue=None):
+        showmessage('error_0', vars())
+
+    def error_1(self, id=None, errorCode=None, errorMsg=None):
+        showmessage('error_1', vars())
+
+    def updateMktDepth(self, tickerId, position, operation, side, price, size):
+        showmessage('updateMktDepth', vars())
+
+    def updateMktDepthL2(self, tickerId, position, marketMaker, operation, side, price, size):
+        showmessage('updateMktDepthL2', vars())
+
+    def updateNewsBulletin(self, msgId, msgType, message, origExchange):
+        showmessage('updateNewsBulletin', vars())
+
+    def managedAccounts(self, accountsList):
+        showmessage('managedAccounts', vars())
+
+    def receiveFA(self, faDataType, xml):
+        showmessage('receiveFA', vars())
+
+    def historicalData(self, reqId, date, open, high, low, close, volume, count, WAP, hasGaps):
+        showmessage('historicalData', vars())
+
+    def scannerParameters(self, xml):
+        showmessage('scannerParameters', vars())
+
+    def scannerData(self, reqId, rank, contractDetails, distance, benchmark, projection, legsStr):
+        showmessage('scannerData', vars())
+
+    def accountDownloadEnd(self, accountName):
+        showmessage('acountDownloadEnd', vars())
+
+    def commissionReport(self, commissionReport):
+        showmessage('commissionReport', vars())
+
+    def contractDetailsEnd(self, reqId):
+        showmessage('contractDetailsEnd', vars())
+
+    def currentTime(self, time):
+        showmessage('currentTime', vars())
+
+    def deltaNeutralValidation(self, reqId, underComp):
+        showmessage('deltaNeutralValidation', vars())
+
+    def execDetailsEnd(self, reqId):
+        showmessage('execDetailsEnd', vars())
+
+    def fundamentalData(self, reqId, data):
+        showmessage('fundamentalData', vars())
+
+    def marketDataType(self, reqId, marketDataType):
+        showmessage('marketDataType', vars())
+
+    def openOrderEnd(self):
+        showmessage('openOrderEnd', vars())
+
+    def realtimeBar(self, reqId, time, open, high, low, close, volume, wap, count):
+        showmessage('realtimeBar', vars())
+
+    def scannerDataEnd(self, reqId):
+        showmessage('scannerDataEnd', vars())
+
+    def tickEFP(self, tickerId, tickType, basisPoints, formattedBasisPoints, impliedFuture, holdDays, futureExpiry, dividendImpact, dividendsToExpiry):
+        showmessage('tickEFP', vars())
+
+    def tickGeneric(self, tickerId, tickType, value):
+        showmessage('tickGeneric', vars())
+
+    def tickSnapshotEnd(self, reqId):
+        showmessage('tickSnapshotEnd', vars())
+
+    def error_0(self, strval):
+        showmessage('error_0', vars())
+
+    def error_1(self, id, errorCode, errorMsg):
+        showmessage('error_1', vars())
+
+    def position(self, account, contract, pos, avgCost):
+        showmessage('position', vars())
+
+    def positionEnd(self):
+        showmessage('positionEnd', vars())
+
+    def accountSummary(self, reqId, account, tag, value, currency):
+        showmessage('accountSummary', vars())
+
+    def accountSummaryEnd(self, reqId):
+        showmessage('accountSummaryEnd', vars())
+
 #allMethods = []
 #def ref(method):
 #    allMethods.append(method.__name__)
 #    return method
 #
 #
+
+class RecoilBot(object):
+
+    def __init__(self, host, port, instruments, watch_threshold, watch_duration,
+                 slowdown_threshold, slowdown_duration):
+        self.host = host
+        self.port = port
+        self.instruments = instruments
+        self.watch_threshold = watch_threshold
+        self.watch_duration = watch_duration
+        self.slowdown_threshold = slowdown_threshold
+        self.slowdown_duration = slowdown_duration
+        self.wrapper = ReferenceWrapper()
+        self.connection = EClientSocket(self.wrapper)
+
+    def connect(self):
+        log.info('Attempting to connect host: {} port: {}...'.format(self.host, self.port))
+        self.connection.eConnect(self.host, self.port, 0)
+        log.info('Connected.')
+
+    def disconnect(self):
+        log.info('Disconnecting...')
+        self.connection.eDisconnect()
+        log.info('Disconnected.')
+
 #class ReferenceApp:
 #    def __init__(self, host='192.168.8.3', port=7496, clientId=0):
 #        self.host = host
@@ -286,7 +309,12 @@ if __name__ == '__main__':
     config_file = parser.add_argument('--config', type=argparse.FileType('r'))
     args = parser.parse_args()
 
-    print(json.load(args.config))
+    config = json.load(args.config)
+
+    bot = RecoilBot(**config)
+    bot.connect()
+    time.sleep(10)
+    bot.disconnect()
 
 #    app = ReferenceApp()
 #    methods = argv[1:]
