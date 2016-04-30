@@ -1,0 +1,11 @@
+
+{
+    "host": "192.168.8.3",
+    "port": 7496,
+    "names": [],
+    "watch_threshold": 0.03,
+    "watch_duration": 60,
+    "slowdown_threshold": 0.002,
+    "slowdown_duration": 4
+}
+
