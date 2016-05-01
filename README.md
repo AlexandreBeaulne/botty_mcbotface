@@ -8,9 +8,9 @@
 * ~~setup configuration of instruments in config file~~
 * write script to translate the bot's logs into pretty human readable report
 * start running live
-* develop order management system (i.e. order triggering and position mgmt)
+* store market data, to do feature testing, backtesting and/or parameter optimization later
+* develop a mock TWS server to test bot during off hours, backtesting, scenarios, etc
+* develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 * develop a market scanner to dynamically scan for instruments to watch
-* develop a mock TWS server to test bot during off hours, backtesting, sceraios, etc
 * move to Amazon AWS
-* setup to store market data, to do backtesting and/or parameter optimization later
 
