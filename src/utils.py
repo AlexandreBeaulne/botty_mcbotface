@@ -10,22 +10,30 @@ def now():
 class log(object):
 
     @staticmethod
-    def __log__(level, msg):
-        template = '{{"ts": "{}", "level": "{}", "msg": {}}}'
+    def __log__(type_, msg):
+        template = '{{"ts": "{}", "type": "{}", "msg": {}}}'
         t = datetime.now().isoformat()
         tz = time.tzname[0]
         ts = '{} {}'.format(t, tz)
-        print(template.format(ts, level, json.dumps(msg)))
+        print(template.format(ts, type_, json.dumps(msg)))
 
     @staticmethod
-    def info(msg):
-        log.__log__('INFO', msg)
+    def operation(msg):
+        log.__log__('OPERATION', msg)
 
     @staticmethod
-    def warn(msg):
-        log.__log__('WARN', msg)
+    def data(msg):
+        log.__log__('DATA', msg)
 
     @staticmethod
-    def error(msg):
-        log.__log__('ERROR', msg)
+    def order(msg):
+        log.__log__('ORDER', msg)
+
+    @staticmethod
+    def execution(msg):
+        log.__log__('EXECUTION', msg)
+
+    @staticmethod
+    def misc(msg):
+        log.__log__('MISC', msg)
 

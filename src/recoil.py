@@ -33,8 +33,8 @@ class RecoilBot(object):
         # data
         self.msgs = queue.Queue()
         self.bbos = collections.defaultdict(dict)
-        ## create trades df with a dummy row for types
-        self.trades = pd.DataFrame({'tickerId': -1, 'px': 0.0}, index=[now()])
+        ## create trades df with a dummy row for have right column types
+        self.trades = pd.DataFrame({'tickerId': -1, 'px': -1}, index=[now()])
 
         # settings
         self.host = host
@@ -43,14 +43,15 @@ class RecoilBot(object):
         self.connection = EClientSocket(self.wrapper)
 
     def connect(self):
-        log.info('Attempting to connect host: {} port: {}...'.format(self.host, self.port))
+        template = 'Attempting to connect host: {} port: {}...'
+        log.operation(template.format(self.host, self.port))
         self.connection.eConnect(self.host, self.port, 0)
-        log.info('Connected.')
+        log.operation('Connected.')
 
     def disconnect(self):
-        log.info('Disconnecting...')
+        log.operation('Disconnecting...')
         self.connection.eDisconnect()
-        log.info('Disconnected.')
+        log.operation('Disconnected.')
 
     def request_data(self):
         for ticker_id, instrument in self.instruments.items():
@@ -78,11 +79,11 @@ class RecoilBot(object):
         # check if signal is triggered
         if abs(chng_since_watch_dur) >= self.watch_threshold and \
            abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
-               log.info({'msg': 'signal triggered',
-                         'tickerId': ticker_id,
-                         'currentPx': cur_px,
-                         'px_slowdown_duration_ago': px_slowdown_dur_ago,
-                         'px_watch_duration_ago': px_watch_dur_ago})
+               log.order({'msg': 'signal triggered',
+                          'symbol': self.instrument[ticker_id]['symbol'],
+                          'currentPx': cur_px,
+                          'px_slowdown_duration_ago': px_slowdown_dur_ago,
+                          'px_watch_duration_ago': px_watch_dur_ago})
 
     def handle_trade(self, msg):
 
@@ -115,11 +116,14 @@ class RecoilBot(object):
     def run(self):
         while True:
             msg = self.msgs.get()
-            log.info(msg)
             if msg['type'] == 'tickPrice':
+                log.data(msg)
                 self.handle_tick_price(msg)
             elif msg['type'] == 'tickSize':
+                log.data(msg)
                 self.handle_tick_size(msg)
+            else:
+                log.misc(msg)
 
 if __name__ == '__main__':
 
@@ -129,6 +133,8 @@ if __name__ == '__main__':
 
     config = json.load(args.config)
     config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
+    inst_mapping = {c['symbol']:i for i, c in config['instruments'].items()}
+    log.operation({"instrument_mapping": inst_mapping})
 
     bot = RecoilBot(**config)
     bot.connect()
@@ -136,7 +142,7 @@ if __name__ == '__main__':
     try:
         bot.run()
     except Exception as e:
-        log.error('encountered exception {}'.format(e))
+        log.operations('encountered exception {}'.format(e))
     finally:
         bot.disconnect()
 
