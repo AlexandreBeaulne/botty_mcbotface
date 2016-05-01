@@ -61,7 +61,7 @@ class RecoilBot(object):
             contract.m_exchange = instrument['exchange']
             self.connection.reqMktData(ticker_id, contract, '', False)
 
-    def check_for_triggered_signal(ticker_id, cur_px):
+    def check_for_triggered_signal(self, ticker_id, cur_px):
 
         inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
 
@@ -84,7 +84,7 @@ class RecoilBot(object):
                          'px_slowdown_duration_ago': px_slowdown_dur_ago,
                          'px_watch_duration_ago': px_watch_dur_ago})
 
-    def handle_trade(msg):
+    def handle_trade(self, msg):
 
         # first append trade to trades table
         data = {key: msg[key] for key in ['tickerId', 'price']}
@@ -97,7 +97,7 @@ class RecoilBot(object):
         cutoff = now() - np.timedelta64(self.watch_duration, 's')
         self.trades = self.trades[self.trades.index >= cutoff]
 
-    def handle_tick_price(msg):
+    def handle_tick_price(self, msg):
         """
         field semantics: 1 = bid, 2 = ask, 4 = last,
                          6 = high, 7 = low, 9 = close
@@ -109,7 +109,7 @@ class RecoilBot(object):
         elif msg['field'] == 4:
             self.handle_trade(msg)
 
-    def handle_tick_size(msg):
+    def handle_tick_size(self, msg):
         pass
 
     def run(self):
@@ -135,6 +135,8 @@ if __name__ == '__main__':
     bot.request_data()
     try:
         bot.run()
-    except:
+    except Exception as e:
+        log.error('encountered exception {}'.format(e))
+    finally:
         bot.disconnect()
 
