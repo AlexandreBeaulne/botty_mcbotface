@@ -32,15 +32,15 @@ class RecoilBot(object):
         # strategy
         self.instruments = instruments
         self.watch_threshold = watch_threshold
-        self.watch_duration = watch_duration
+        self.watch_dur = watch_duration
         self.slowdown_threshold = slowdown_threshold
-        self.slowdown_duration = slowdown_duration
+        self.slowdown_dur = slowdown_duration
 
         # data
         self.msgs = queue.Queue()
         self.bbos = collections.defaultdict(dict)
         ## create trades df with a dummy row for types
-        self.trades = pd.DataFrame({'tickerId': -1, 'price': 0.0}, index=[now()])
+        self.trades = pd.DataFrame({'tickerId': -1, 'px': 0.0}, index=[now()])
 
     def connect(self):
         log.info('Attempting to connect host: {} port: {}...'.format(self.host, self.port))
@@ -60,8 +60,28 @@ class RecoilBot(object):
         contract.m_exchange = 'IDEALPRO'
         self.connection.reqMktData(1, contract, '', False)
 
-    def check_for_triggered_signal(ticker_id):
-        pass
+    def check_for_triggered_signal(ticker_id, cur_px):
+
+        inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
+
+        watch_dur_ago = now() - np.timedelta64(self.watch_dur, 's')
+        latest_ts_asof_watch_dur = inst_trades.index.asof(watch_dur_ago)
+        px_watch_dur_ago = inst_trades.loc[latest_ts_asof_watch_dur]['px']
+        chng_since_watch_dur = px - px_watch_dur_ago / px_watch_dur_ago
+
+        slowdown_dur_ago = now() - np.timedelta64(self.slowdown_dur, 's')
+        latest_ts_asof_slowdown_dur = inst_trades.index.asof(slowdown_dur_ago)
+        px_slowdown_dur_ago = inst_trades.loc[latest_ts_asof_slowdown_dur]['px']
+        chng_since_slowdown_dur = px - px_slowdown_dur_ago / px_slowdown_dur_ago
+
+        # check if signal is triggered
+        if abs(chng_since_watch_dur) >= self.watch_threshold and
+           abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
+               log.info({'msg': 'signal triggered',
+                         'tickerId': ticker_id,
+                         'currentPx': cur_px,
+                         'px_slowdown_duration_ago': px_slowdown_dur_ago,
+                         'px_watch_duration_ago': px_watch_dur_ago})
 
     def handle_trade(msg):
 
@@ -70,10 +90,10 @@ class RecoilBot(object):
         self.trades = self.trades.append(pd.DataFrame(data, index=[now()]))
 
         # second check if any signal is triggered
-        self.check_for_triggered_signal(msg['tickerId'])
+        self.check_for_triggered_signal(msg['tickerId'], msg['price'])
 
         # finally remove old trades from table
-        cutoff = now() - np.timedelta(self.watch_duration, 's')
+        cutoff = now() - np.timedelta64(self.watch_duration, 's')
         self.trades = self.trades[self.trades.index >= cutoff]
 
     def handle_tick_price(msg):
