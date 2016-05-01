@@ -2,10 +2,40 @@
 {
     "host": "192.168.8.3",
     "port": 7496,
-    "instruments": [],
+
     "watch_threshold": 0.03,
     "watch_duration": 60,
     "slowdown_threshold": 0.002,
-    "slowdown_duration": 4
+    "slowdown_duration": 4,
+
+    "instruments": [
+        {"symbol": "ISCO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "DXI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "DRNE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "PVBK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "BIOC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "EPRS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "GV", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ISR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CHMG", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "IVTY", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "HBIO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "THM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "SKIS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ASMB", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "OFS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "NICK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "AVEO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "BEBE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ICAD", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "SUNEQ", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "BTUUQ", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "GNCA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "VCEL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ENO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "NVTR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "XRA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "IPI", "currency": "USD", "secType": "STK", "exchange": "SMART"}
+    ]
 }
 

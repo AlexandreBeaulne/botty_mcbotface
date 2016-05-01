@@ -23,12 +23,6 @@ class RecoilBot(object):
     def __init__(self, host, port, instruments, watch_threshold, watch_duration,
                  slowdown_threshold, slowdown_duration):
 
-        # settings
-        self.host = host
-        self.port = port
-        self.wrapper = Wrapper(self.msgs)
-        self.connection = EClientSocket(self.wrapper)
-
         # strategy
         self.instruments = instruments
         self.watch_threshold = watch_threshold
@@ -42,6 +36,12 @@ class RecoilBot(object):
         ## create trades df with a dummy row for types
         self.trades = pd.DataFrame({'tickerId': -1, 'px': 0.0}, index=[now()])
 
+        # settings
+        self.host = host
+        self.port = port
+        self.wrapper = Wrapper(self.msgs)
+        self.connection = EClientSocket(self.wrapper)
+
     def connect(self):
         log.info('Attempting to connect host: {} port: {}...'.format(self.host, self.port))
         self.connection.eConnect(self.host, self.port, 0)
@@ -53,12 +53,13 @@ class RecoilBot(object):
         log.info('Disconnected.')
 
     def request_data(self):
-        contract = Contract()
-        contract.m_symbol = 'AUD'
-        contract.m_currency = 'USD'
-        contract.m_secType = 'CASH'
-        contract.m_exchange = 'IDEALPRO'
-        self.connection.reqMktData(1, contract, '', False)
+        for ticker_id, instrument in self.instruments.items():
+            contract = Contract()
+            contract.m_symbol = instrument['symbol']
+            contract.m_currency = instrument['currency']
+            contract.m_secType = instrument['secType']
+            contract.m_exchange = instrument['exchange']
+            self.connection.reqMktData(ticker_id, contract, '', False)
 
     def check_for_triggered_signal(ticker_id, cur_px):
 
@@ -75,7 +76,7 @@ class RecoilBot(object):
         chng_since_slowdown_dur = px - px_slowdown_dur_ago / px_slowdown_dur_ago
 
         # check if signal is triggered
-        if abs(chng_since_watch_dur) >= self.watch_threshold and
+        if abs(chng_since_watch_dur) >= self.watch_threshold and \
            abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
                log.info({'msg': 'signal triggered',
                          'tickerId': ticker_id,
@@ -114,7 +115,7 @@ class RecoilBot(object):
     def run(self):
         while True:
             msg = self.msgs.get()
-            log.error(msg)
+            log.info(msg)
             if msg['type'] == 'tickPrice':
                 self.handle_tick_price(msg)
             elif msg['type'] == 'tickSize':
@@ -127,6 +128,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     config = json.load(args.config)
+    config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
 
     bot = RecoilBot(**config)
     bot.connect()
