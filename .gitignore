@@ -1,4 +1,5 @@
 *.pyc
 *.swp
 *.swo
+*.jsonl
 __pycache__/

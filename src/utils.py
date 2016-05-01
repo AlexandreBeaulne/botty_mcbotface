@@ -7,33 +7,33 @@ from datetime import datetime
 def now():
     return np.datetime64(datetime.now().isoformat())
 
-class log(object):
+class Logger(object):
 
-    @staticmethod
-    def __log__(type_, msg):
-        template = '{{"ts": "{}", "type": "{}", "msg": {}}}'
+    def __init__(self):
+        log = 'recoil.{}.jsonl'.format(datetime.now().strftime('%Y%M%d.%H%M%S'))
+        self.fh = open(log, 'w')
+
+    def __log__(self, type_, msg):
+        template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
         t = datetime.now().isoformat()
         tz = time.tzname[0]
         ts = '{} {}'.format(t, tz)
-        print(template.format(ts, type_, json.dumps(msg)))
+        log = template.format(ts, type_, json.dumps(msg))
+        self.fh.write(log)
+        print(log)
 
-    @staticmethod
-    def operation(msg):
-        log.__log__('OPERATION', msg)
+    def operation(self, msg):
+        self.__log__('OPERATION', msg)
 
-    @staticmethod
-    def data(msg):
-        log.__log__('DATA', msg)
+    def data(self, msg):
+        self.__log__('DATA', msg)
 
-    @staticmethod
-    def order(msg):
-        log.__log__('ORDER', msg)
+    def order(self, msg):
+        self.__log__('ORDER', msg)
 
-    @staticmethod
-    def execution(msg):
-        log.__log__('EXECUTION', msg)
+    def execution(self, msg):
+        self.__log__('EXECUTION', msg)
 
-    @staticmethod
-    def misc(msg):
-        log.__log__('MISC', msg)
+    def misc(self, msg):
+        self.__log__('MISC', msg)
 
