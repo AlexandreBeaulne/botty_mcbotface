@@ -6,9 +6,9 @@
 * ~~handle inbound market data~~
 * ~~log if trading signal is triggered~~
 * ~~setup configuration of instruments in config file~~
-* write script to translate the bot's logs into pretty human readable report
+* ~~store market data, to do feature testing, backtesting and/or parameter optimization later~~
+* ~~write script to translate the bot's logs into pretty human readable report~~
 * start running live
-* store market data, to do feature testing, backtesting and/or parameter optimization later
 * develop a mock TWS server to test bot during off hours, backtesting, scenarios, etc
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 * develop a market scanner to dynamically scan for instruments to watch

@@ -81,10 +81,10 @@ class RecoilBot(object):
         if abs(chng_since_watch_dur) >= self.watch_threshold and \
            abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
                self.log.order({'msg': 'signal triggered',
-                               'symbol': self.instrument[ticker_id]['symbol'],
+                               'tickerId': ticker_id,
                                'currentPx': cur_px,
-                               'px_slowdown_duration_ago': px_slowdown_dur_ago,
-                               'px_watch_duration_ago': px_watch_dur_ago})
+                               'pxSlowdownDurationAgo': px_slowdown_dur_ago,
+                               'pxWatchDurationAgo': px_watch_dur_ago})
 
     def handle_trade(self, msg):
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
     config = json.load(args.config)
     config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
-    inst_mapping = {c['symbol']:i for i, c in config['instruments'].items()}
+    inst_mapping = {i:c['symbol'] for i, c in config['instruments'].items()}
     log.operation({"instrument_mapping": inst_mapping})
 
     config['logger'] = log
