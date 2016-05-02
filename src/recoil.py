@@ -21,7 +21,7 @@ from ib.ext.EClientSocket import EClientSocket
 class RecoilBot(object):
 
     def __init__(self, host, port, instruments, watch_threshold, watch_duration,
-                 slowdown_threshold, slowdown_duration, logger):
+                 slowdown_threshold, slowdown_duration, logger, replay_file):
 
         # strategy
         self.instruments = instruments
@@ -40,29 +40,45 @@ class RecoilBot(object):
         # operations
         self.host = host
         self.port = port
-        self.wrapper = Wrapper(self.msgs)
-        self.connection = EClientSocket(self.wrapper)
+        if replay_file:
+            self.replay_file = replay_file
+        else:
+            self.replay_file = None
+            self.wrapper = Wrapper(self.msgs)
+            self.connection = EClientSocket(self.wrapper)
         self.log = logger
 
     def connect(self):
-        template = 'Attempting to connect host: {} port: {}...'
-        self.log.operation(template.format(self.host, self.port))
-        self.connection.eConnect(self.host, self.port, 0)
-        self.log.operation('Connected.')
+        if self.replay_file:
+            self.log.operation('Replaying {}...'.format(self.replay_file))
+            with open(self.replay_file, 'r') as fh:
+                for line in fh:
+                    line = json.loads(line)
+                    if line['type'] == 'DATA':
+                        msg = line['msg']
+                        msg['ts'] = np.datetime64(line['ts'][:-5])
+                        self.msgs.put(msg)
+        else:
+            template = 'Attempting to connect host: {} port: {}...'
+            self.log.operation(template.format(self.host, self.port))
+            self.connection.eConnect(self.host, self.port, 0)
+            self.log.operation('Connected.')
 
     def disconnect(self):
-        self.log.operation('Disconnecting...')
-        self.connection.eDisconnect()
-        self.log.operation('Disconnected.')
+        if not self.replay_file:
+            self.log.operation('Disconnecting...')
+            self.connection.eDisconnect()
+            self.log.operation('Disconnected.')
 
     def request_data(self):
-        for ticker_id, instrument in self.instruments.items():
-            contract = Contract()
-            contract.m_symbol = instrument['symbol']
-            contract.m_currency = instrument['currency']
-            contract.m_secType = instrument['secType']
-            contract.m_exchange = instrument['exchange']
-            self.connection.reqMktData(ticker_id, contract, '', False)
+        if not self.replay_file:
+            for ticker_id, instrument in self.instruments.items():
+                contract = Contract()
+                contract.m_symbol = instrument['symbol']
+                contract.m_currency = instrument['currency']
+                contract.m_secType = instrument['secType']
+                contract.m_exchange = instrument['exchange']
+                self.connection.reqMktData(ticker_id, contract, '', False)
 
     def check_for_triggered_signal(self, ticker_id, ts, cur_px):
 
@@ -134,12 +150,14 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="recoil trading bot")
     config_file = parser.add_argument('--config', type=argparse.FileType('r'))
+    replay_file = parser.add_argument('--replay-file')
     args = parser.parse_args()
 
     log = Logger()
 
     config = json.load(args.config)
     config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
+    config['replay_file'] = args.replay_file
     log.operation({"config": config})
 
     config['logger'] = log
