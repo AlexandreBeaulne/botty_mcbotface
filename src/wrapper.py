@@ -88,7 +88,7 @@ class Wrapper(EWrapper):
         self.msgs.put(msg)
 
     def execDetailsEnd(self, reqId):
-        msg = {'type': 'execDetailsEnd', 'reqId': reqId}
+        msg = {'type': 'execDetailsEnd', 'reqId': reqId, 'ts': now()}
         self.msgs.put(msg)
 
     def connectionClosed(self):
@@ -187,7 +187,7 @@ class Wrapper(EWrapper):
         self.msgs.put(msg)
 
     def positionEnd(self):
-        msg = {'type': 'positionEnd', 'ts': now()}
+        msg = {'type': 'positionEnd', 'ts': now(), 'ts': now()}
         self.msgs.put(msg)
 
     def accountSummary(self, reqId, account, tag, value, currency):
