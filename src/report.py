@@ -7,7 +7,7 @@ import collections
 import datetime
 
 def pretty_ts(ts, offset):
-    ts  = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S.%f %Z')
+    ts  = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S.%f%z')
     ts += datetime.timedelta(hours=offset)
     return ts.strftime('%Y-%m-%d %H:%M:%S.%f')
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         elif log['type'] == 'DATA':
 
             # trade price
-            if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 9: #4:!!!!
+            if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
                 symbol = get_symbol(inst_map, log['msg']['tickerId'])
                 ts = pretty_ts(log['ts'], args.tz_offset)
                 px = log['msg']['price']
