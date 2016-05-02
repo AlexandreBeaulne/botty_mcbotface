@@ -6,7 +6,7 @@
     "watch_threshold": 0.03,
     "watch_duration": 60,
     "slowdown_threshold": 0.002,
-    "slowdown_duration": 4,
+    "slowdown_duration": 3,
 
     "instruments": [
         {"symbol": "GILD", "currency": "USD", "secType": "STK", "exchange": "SMART"},
