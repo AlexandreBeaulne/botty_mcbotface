@@ -109,14 +109,14 @@ class RecoilBot(object):
         px = msg['price']
 
         # first append trade to trades table
-        data = {'tickerId': ticker_id, 'price': px}
+        data = {'tickerId': ticker_id, 'px': px}
         self.trades = self.trades.append(pd.DataFrame(data, index=[ts]))
 
         # second check if any signal is triggered
         self.check_for_triggered_signal(ticker_id, ts, px)
 
         # finally remove old trades from table
-        cutoff = ts - np.timedelta64(self.watch_duration, 's')
+        cutoff = ts - np.timedelta64(self.watch_dur, 's')
         self.trades = self.trades[self.trades.index >= cutoff]
 
     def handle_tick_price(self, msg):
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     try:
         bot.run()
     except Exception as e:
-        log.operation('encountered exception {}'.format(e))
+        log.error('encountered exception {}'.format(e))
     finally:
         bot.disconnect()
 
