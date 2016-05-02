@@ -1,4 +1,5 @@
 
+import copy
 import time
 import json
 import numpy as np
@@ -14,6 +15,7 @@ class Logger(object):
         self.fh = open(log, 'w')
 
     def __log__(self, type_, msg):
+        msg = copy.deepcopy(msg)
         template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
         if 'ts' in msg:
             ts = str(msg['ts'])
