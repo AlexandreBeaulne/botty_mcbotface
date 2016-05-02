@@ -136,8 +136,7 @@ if __name__ == '__main__':
 
     config = json.load(args.config)
     config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
-    inst_mapping = {i:c['symbol'] for i, c in config['instruments'].items()}
-    log.operation({"instrument_mapping": inst_mapping})
+    log.operation({"config": config})
 
     config['logger'] = log
     bot = RecoilBot(**config)

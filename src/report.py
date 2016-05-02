@@ -11,8 +11,8 @@ def pretty_ts(ts, offset):
     ts += datetime.timedelta(hours=offset)
     return ts.strftime('%Y-%m-%d %H:%M:%S.%f')
 
-def get_symbol(instrument_mapping, ticker_id):
-    return instrument_mapping.get(ticker_id, 'ticker ID: {}'.format(ticker_id))
+def get_symbol(inst_map, ticker_id):
+    return inst_map.get(ticker_id, 'ticker ID: {}'.format(ticker_id))
 
 if __name__ == '__main__':
 
@@ -22,34 +22,40 @@ if __name__ == '__main__':
 
     logs = collections.defaultdict(list)
 
-    for line in sys.stdin:
+    for log in sys.stdin:
 
-        log = json.loads(line)
+        log = json.loads(log)
 
-        if log['type'] == 'OPERATION' and 'instrument_mapping' in log['msg']:
-            instrument_mapping = log['msg']['instrument_mapping']
-            instrument_mapping = {int(i):s for i, s in instrument_mapping.items()}
+        if log['type'] == 'OPERATION' and 'config' in log['msg']:
+            watch_threshold = log['msg']['config']['watch_threshold']
+            watch_duration = log['msg']['config']['watch_duration']
+            slowdown_threshold = log['msg']['config']['slowdown_threshold']
+            slowdown_duration = log['msg']['config']['slowdown_duration']
+            inst_map = log['msg']['config']['instruments']
+            inst_map = {int(i):c['symbol'] for i, c in inst_map.items()}
 
         elif log['type'] == 'DATA':
 
             # trade price
-            if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
-                symbol = get_symbol(instrument_mapping, log['msg']['tickerId'])
+            if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 9: #4:!!!!
+                symbol = get_symbol(inst_map, log['msg']['tickerId'])
                 ts = pretty_ts(log['ts'], args.tz_offset)
-                new_log = '{} trade px {}'.format(ts, log['msg']['price'])
-                logs[symbol].append(new_log)
+                px = log['msg']['price']
+                line = '{} trade - px: {}'.format(ts, px)
+                logs[symbol].append(line)
 
         elif log['type'] == 'ORDER' and log['msg'] == 'signal triggered':
-            symbol = get_symbol(instrument_mapping, log['tickerId'])
-            fmt  = '{} signal triggered! px watch duration ago: {} '
-            fmt += 'px slowdown duration ago: {} current px: {}'
+            symbol = get_symbol(inst_map, log['tickerId'])
             ts = pretty_ts(log['ts'], args.tz_offset)
-            new_log = fmt.format(ts, log['pxWatchDurationAgo'],
-                                 log['pxSlowdownDurationAgo'], log['currentPx'])
-            logs[symbol].append(new_log)
+            fmt  = '{} signal triggered! - px {}s ago: {}, '
+            fmt += 'px {}s ago: {}, current px: {}'
+            line = fmt.format(ts, log['pxWatchDurationAgo'], watch_duration,
+                log['pxSlowdownDurationAgo'], slowdown_duration, log['currentPx'])
+            logs[symbol].append(line)
 
+    fmt = '\n##### symbol: {} - watch threshold: {}% - slowdown threshold: {}%'
     for symbol, logs in logs.items():
-        print('\n==========={}==========='.format(symbol))
+        print(fmt.format(symbol, 100 * watch_threshold, 100 * slowdown_threshold))
         for log in logs:
             print(log)
 
