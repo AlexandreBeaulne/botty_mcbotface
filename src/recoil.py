@@ -13,7 +13,7 @@ import pandas as pd
 from datetime import datetime
 
 from wrapper import Wrapper
-from utils import Logger, now
+from utils import Logger
 
 from ib.ext.Contract import Contract
 from ib.ext.EClientSocket import EClientSocket
@@ -34,7 +34,8 @@ class RecoilBot(object):
         self.msgs = queue.Queue()
         self.bbos = collections.defaultdict(dict)
         ## create trades df with a dummy row for have right column types
-        self.trades = pd.DataFrame({'tickerId': -1, 'px': -1}, index=[now()])
+        dummy_ts = np.datetime64('1970-01-01')
+        self.trades = pd.DataFrame({'tickerId': -1, 'px': -1}, index=[dummy_ts])
 
         # operations
         self.host = host
@@ -63,16 +64,16 @@ class RecoilBot(object):
             contract.m_exchange = instrument['exchange']
             self.connection.reqMktData(ticker_id, contract, '', False)
 
-    def check_for_triggered_signal(self, ticker_id, cur_px):
+    def check_for_triggered_signal(self, ticker_id, ts, cur_px):
 
         inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
 
-        watch_dur_ago = now() - np.timedelta64(self.watch_dur, 's')
+        watch_dur_ago = ts - np.timedelta64(self.watch_dur, 's')
         latest_ts_asof_watch_dur = inst_trades.index.asof(watch_dur_ago)
         px_watch_dur_ago = inst_trades.loc[latest_ts_asof_watch_dur]['px']
         chng_since_watch_dur = px - px_watch_dur_ago / px_watch_dur_ago
 
-        slowdown_dur_ago = now() - np.timedelta64(self.slowdown_dur, 's')
+        slowdown_dur_ago = ts - np.timedelta64(self.slowdown_dur, 's')
         latest_ts_asof_slowdown_dur = inst_trades.index.asof(slowdown_dur_ago)
         px_slowdown_dur_ago = inst_trades.loc[latest_ts_asof_slowdown_dur]['px']
         chng_since_slowdown_dur = px - px_slowdown_dur_ago / px_slowdown_dur_ago
@@ -80,23 +81,26 @@ class RecoilBot(object):
         # check if signal is triggered
         if abs(chng_since_watch_dur) >= self.watch_threshold and \
            abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
-               self.log.order({'msg': 'signal triggered',
-                               'tickerId': ticker_id,
-                               'currentPx': cur_px,
+               self.log.order({'msg': 'signal triggered', 'ts': ts,
+                               'tickerId': ticker_id, 'currentPx': cur_px,
                                'pxSlowdownDurationAgo': px_slowdown_dur_ago,
                                'pxWatchDurationAgo': px_watch_dur_ago})
 
     def handle_trade(self, msg):
 
+        ts = msg['ts']
+        ticker_id = msg['tickerId']
+        px = msg['price']
+
         # first append trade to trades table
-        data = {key: msg[key] for key in ['tickerId', 'price']}
-        self.trades = self.trades.append(pd.DataFrame(data, index=[now()]))
+        data = {'tickerId': ticker_id, 'price': px}
+        self.trades = self.trades.append(pd.DataFrame(data, index=[ts]))
 
         # second check if any signal is triggered
-        self.check_for_triggered_signal(msg['tickerId'], msg['price'])
+        self.check_for_triggered_signal(ticker_id, ts, px)
 
         # finally remove old trades from table
-        cutoff = now() - np.timedelta64(self.watch_duration, 's')
+        cutoff = ts - np.timedelta64(self.watch_duration, 's')
         self.trades = self.trades[self.trades.index >= cutoff]
 
     def handle_tick_price(self, msg):
@@ -145,7 +149,7 @@ if __name__ == '__main__':
     try:
         bot.run()
     except Exception as e:
-        log.operations('encountered exception {}'.format(e))
+        log.operation('encountered exception {}'.format(e))
     finally:
         bot.disconnect()
 

@@ -10,14 +10,18 @@ def now():
 class Logger(object):
 
     def __init__(self):
-        log = 'recoil.{}.jsonl'.format(datetime.now().strftime('%Y%M%d.%H%M%S'))
+        log = 'recoil.{}.jsonl'.format(datetime.now().strftime('%Y%m%d.%H%M%S'))
         self.fh = open(log, 'w')
 
     def __log__(self, type_, msg):
         template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
-        t = datetime.now().isoformat()
-        tz = time.tzname[0]
-        ts = '{} {}'.format(t, tz)
+        if 'ts' in msg:
+            ts = str(msg['ts'])
+            del msg['ts']
+        else:
+            t = datetime.now().isoformat()
+            tz = time.tzname[0]
+            ts = '{} {}'.format(t, tz)
         log = template.format(ts, type_, json.dumps(msg))
         self.fh.write(log)
         print(log)
