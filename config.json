@@ -1,6 +1,6 @@
 
 {
-    "host": "192.168.8.3",
+    "host": "192.168.8.4",
     "port": 7496,
 
     "watch_threshold": 0.03,
@@ -9,6 +9,22 @@
     "slowdown_duration": 3,
 
     "instruments": [
+        {"symbol": "AMID", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "APOL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "WLL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CHK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "YELP", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "TAT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CIR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "BOOM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "RYI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "GRWC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ULTR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "PTX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "GNW", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "KERX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "MEET", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "MITK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GILD", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PRGO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AXAS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
