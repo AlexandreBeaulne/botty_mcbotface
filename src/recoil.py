@@ -3,7 +3,6 @@
 Trading bot for recoil strat
 """
 
-import math
 import json
 import argparse
 import time
@@ -81,7 +80,7 @@ class RecoilBot(object):
                 contract.m_exchange = instrument['exchange']
                 self.connection.reqMktData(ticker_id, contract, '', False)
 
-    def check_for_triggered_signal(self, ticker_id, ts, cur_px):
+    def check_for_triggered_signal(self, ticker_id, ts, px):
 
         inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
 
@@ -91,23 +90,24 @@ class RecoilBot(object):
         slowdown_dur_ago = ts - np.timedelta64(self.slowdown_dur, 's')
         latest_ts_asof_slowdown_dur = inst_trades.index.asof(slowdown_dur_ago)
 
-        if latest_ts_asof_watch_dur is float and \
-                not math.isnan(latest_ts_asof_watch_dur) and \
-                latest_ts_asof_slowdown_dur is float and \
-                not math.isnan(latest_ts_asof_slowdown_dur):
-            px_watch_dur_ago = inst_trades.loc[latest_ts_asof_watch_dur]['px']
-            chng_since_watch_dur = px - px_watch_dur_ago / px_watch_dur_ago
+        if pd.isnull(latest_ts_asof_watch_dur): # means there's no trades old enough
+            return
+        if pd.isnull(latest_ts_asof_slowdown_dur): # means there's no trades old enough
+            return
 
-            px_slowdown_dur_ago = inst_trades.loc[latest_ts_asof_slowdown_dur]['px']
-            chng_since_slowdown_dur = px - px_slowdown_dur_ago / px_slowdown_dur_ago
+        px_watch_dur_ago = inst_trades.loc[latest_ts_asof_watch_dur]['px']
+        chng_since_watch_dur = (px - px_watch_dur_ago) / px_watch_dur_ago
 
-            # check if signal is triggered
-            if abs(chng_since_watch_dur) >= self.watch_threshold and \
-               abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
-                   self.log.order({'msg': 'signal triggered', 'ts': ts,
-                                   'tickerId': ticker_id, 'currentPx': cur_px,
-                                   'pxSlowdownDurationAgo': px_slowdown_dur_ago,
-                                   'pxWatchDurationAgo': px_watch_dur_ago})
+        px_slowdown_dur_ago = inst_trades.loc[latest_ts_asof_slowdown_dur]['px']
+        chng_since_slowdown_dur = (px - px_slowdown_dur_ago) / px_slowdown_dur_ago
+
+        # check if signal is triggered
+        if abs(chng_since_watch_dur) >= self.watch_threshold and \
+           abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
+               self.log.order({'msg': 'signal triggered', 'ts': ts,
+                               'tickerId': ticker_id, 'currentPx': px,
+                               'pxSlowdownDurationAgo': px_slowdown_dur_ago,
+                               'pxWatchDurationAgo': px_watch_dur_ago})
 
     def handle_trade(self, msg):
 
@@ -121,10 +121,6 @@ class RecoilBot(object):
 
         # second check if any signal is triggered
         self.check_for_triggered_signal(ticker_id, ts, px)
-
-        # finally remove old trades from table
-        cutoff = ts - np.timedelta64(self.watch_dur, 's')
-        self.trades = self.trades[self.trades.index >= cutoff]
 
     def handle_tick_price(self, msg):
         """
