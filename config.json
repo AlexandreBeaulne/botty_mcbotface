@@ -9,6 +9,18 @@
     "slowdown_duration": 3,
 
     "instruments": [
+        {"symbol": "VRX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "SFUN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "VG", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "VALE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ARCI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "UNXL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "KRA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "RESN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "SYNC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "WTW", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "BABA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "FIT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PCLN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "Z", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AA", "currency": "USD", "secType": "STK", "exchange": "SMART"},

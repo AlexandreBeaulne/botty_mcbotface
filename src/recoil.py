@@ -85,29 +85,33 @@ class RecoilBot(object):
         inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
 
         watch_dur_ago = ts - np.timedelta64(self.watch_dur, 's')
-        latest_ts_asof_watch_dur = inst_trades.index.asof(watch_dur_ago)
+        watch_ts = inst_trades.index.asof(watch_dur_ago)
 
         slowdown_dur_ago = ts - np.timedelta64(self.slowdown_dur, 's')
-        latest_ts_asof_slowdown_dur = inst_trades.index.asof(slowdown_dur_ago)
+        slowdown_ts = inst_trades.index.asof(slowdown_dur_ago)
 
-        if pd.isnull(latest_ts_asof_watch_dur): # means there's no trades old enough
+        if pd.isnull(watch_ts): # means there's no trades old enough
             return
-        if pd.isnull(latest_ts_asof_slowdown_dur): # means there's no trades old enough
+        if pd.isnull(slowdown_ts): # means there's no trades old enough
             return
 
-        px_watch_dur_ago = inst_trades.loc[latest_ts_asof_watch_dur]['px']
-        chng_since_watch_dur = (px - px_watch_dur_ago) / px_watch_dur_ago
+        watch_px = inst_trades.loc[watch_ts]['px']
+        watch_chng = (px - watch_px) / watch_px
 
-        px_slowdown_dur_ago = inst_trades.loc[latest_ts_asof_slowdown_dur]['px']
-        chng_since_slowdown_dur = (px - px_slowdown_dur_ago) / px_slowdown_dur_ago
+        slowdown_px = inst_trades.loc[slowdown_ts]['px']
+        slowdown_chng = (px - slowdown_px) / slowdown_px
 
         # check if signal is triggered
-        if abs(chng_since_watch_dur) >= self.watch_threshold and \
-           abs(chng_since_slowdown_dur) <= self.slowdown_threshold:
+        if abs(watch_chng) >= self.watch_threshold and \
+           abs(slowdown_chng) <= self.slowdown_threshold:
                self.log.order({'msg': 'signal triggered', 'ts': ts,
-                               'tickerId': ticker_id, 'currentPx': px,
-                               'pxSlowdownDurationAgo': px_slowdown_dur_ago,
-                               'pxWatchDurationAgo': px_watch_dur_ago})
+                               'tickerId': ticker_id, 'current_px': px,
+                               'watch_ts': watch_ts.isoformat(),
+                               'watch_px': watch_px,
+                               'watch_chng': watch_chng,
+                               'slowdown_ts': slowdown_ts.isoformat(),
+                               'slowdown_px': slowdown_px,
+                               'slowdown_chng': slowdown_chng})
 
     def handle_trade(self, msg):
 
@@ -170,7 +174,7 @@ if __name__ == '__main__':
     try:
         bot.run()
     except Exception as e:
-        log.error('encountered exception {}'.format(e))
+        log.operation('encountered exception {}'.format(e))
     finally:
         bot.disconnect()
 

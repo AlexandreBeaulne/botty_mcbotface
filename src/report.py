@@ -9,9 +9,16 @@ import base64
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import dates
 
-def parse_ts(ts, offset):
-    ts  = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S.%f%z')
+def parse_ts(ts):
+    if len(ts) == 26: # TODO fix this hack for timestamps
+        fmt = '%Y-%m-%dT%H:%M:%S.%f'
+        offset = -4
+    else:
+        fmt = '%Y-%m-%dT%H:%M:%S.%f%z'
+        offset = -12
+    ts  = datetime.datetime.strptime(ts, fmt)
     ts += datetime.timedelta(hours=offset)
     return np.datetime64(ts.isoformat())
 
@@ -26,35 +33,41 @@ def print_html(metadata, figures):
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>report</title></head><body>""")
 
-    print('start time: {}</br>'.format(metadata['start']))
-    print('end time:   {}</br>'.format(metadata['end']))
-    print('{} instruments</br>'.format(metadata['instruments']))
-    print('{} trade ticks</br>'.format(metadata['trades']))
-    print('{} signals</br></br>'.format(metadata['signals']))
+    print('<h1>Report</h1>')
+
+    print('<table>')
+    print('<tr><td>watch duration:</td><td>{}s</td></tr>'.format(metadata['watch_duration']))
+    print('<tr><td>watch threshold:</td><td>{}%</td></tr>'.format(100 * metadata['watch_threshold']))
+    print('<tr><td>slowdown duration:</td><td>{}s</td></tr>'.format(metadata['slowdown_duration']))
+    print('<tr><td>slowdown threshold:</td><td>{}%</td></tr>'.format(100 * metadata['slowdown_threshold']))
+    print('<tr><td>start time:</td><td>{}</td></tr>'.format(metadata['start']))
+    print('<tr><td>end time:</td><td>{}</td></tr>'.format(metadata['end']))
+    print('<tr><td># instruments:</td><td>{}</td></tr>'.format(metadata['num_instruments']))
+    print('<tr><td># trade ticks:</td><td>{}</td></tr>'.format(metadata['num_trades']))
+    print('<tr><td># signals:</td><td>{}</td></tr>'.format(metadata['num_signals']))
+    print('</table>')
 
     for figure in figures:
-        print("<img src='data:image/png;base64,{}'/></br>".format(figure))
+        print("<img src='data:image/png;base64,{}'/></td></tr>".format(figure))
 
     print('</body></html>')
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description="reports from logs")
-    config_file = parser.add_argument('--tz-offset', type=int, default=-12)
-    args = parser.parse_args()
-
     trades = []
     signals = []
+
+    metadata = dict()
 
     for log in sys.stdin:
 
         log = json.loads(log)
 
         if log['type'] == 'OPERATION' and 'config' in log['msg']:
-            watch_threshold = log['msg']['config']['watch_threshold']
-            watch_duration = log['msg']['config']['watch_duration']
-            slowdown_threshold = log['msg']['config']['slowdown_threshold']
-            slowdown_duration = log['msg']['config']['slowdown_duration']
+            metadata['watch_threshold'] = log['msg']['config']['watch_threshold']
+            metadata['watch_duration'] = log['msg']['config']['watch_duration']
+            metadata['slowdown_threshold'] = log['msg']['config']['slowdown_threshold']
+            metadata['slowdown_duration'] = log['msg']['config']['slowdown_duration']
             inst_map = log['msg']['config']['instruments']
             inst_map = {int(i):c['symbol'] for i, c in inst_map.items()}
 
@@ -63,41 +76,58 @@ if __name__ == '__main__':
             # trade price
             if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
                 symbol = get_symbol(inst_map, log['msg']['tickerId'])
-                ts = parse_ts(log['ts'], args.tz_offset)
+                ts = parse_ts(log['ts'])
                 px = log['msg']['price']
                 trades.append({'symbol': symbol, 'ts': ts, 'px': px})
 
         elif log['type'] == 'ORDER' and log['msg']['msg'] == 'signal triggered':
-            symbol = get_symbol(inst_map, log['msg']['tickerId'])
-            ts = parse_ts(log['ts'], args.tz_offset)
-            signals.append({'symbol': symbol, 'ts': ts})
+            signal = dict()
+            signal['symbol'] = get_symbol(inst_map, log['msg']['tickerId'])
+            signal['ts'] = parse_ts(log['ts'])
+            signal['px'] = log['msg']['current_px']
+            signal['watch_ts'] = parse_ts(log['msg']['watch_ts'])
+            signal['watch_px'] = log['msg']['watch_px']
+            signal['watch_chng'] = log['msg']['watch_chng']
+            signal['slowdown_ts'] = parse_ts(log['msg']['slowdown_ts'])
+            signal['slowdown_px'] = log['msg']['slowdown_px']
+            signal['slowdown_chng'] = log['msg']['slowdown_chng']
+            signals.append(signal)
 
-
-    metadata = {'start': trades[0]['ts'], 'end': trades[-1]['ts'],
-                'instruments': len(inst_map), 'trades': len(trades),
-                'signals': len(signals)}
+    metadata['start'] = trades[0]['ts']
+    metadata['end'] = trades[-1]['ts']
+    metadata['num_instruments'] = len(inst_map)
+    metadata['num_trades'] = len(trades)
+    metadata['num_signals'] = len(signals)
 
     trades = pd.DataFrame(trades)
-    signals = pd.DataFrame(signals)
-    figures = []
+    graphs = []
 
-    for _idx, signal in signals.iterrows():
+    fmt = dates.DateFormatter('%H:%M:%S')
+    for signal in signals:
         ts = signal['ts']
         symbol = signal['symbol']
-        start = ts - np.timedelta64(2 * watch_duration, 's')
-        end = ts + np.timedelta64(2 * watch_duration, 's')
+        start = ts - np.timedelta64(2 * metadata['watch_duration'], 's')
+        end = ts + np.timedelta64(2 * metadata['watch_duration'], 's')
         filter_ = (trades['ts'] >= start) & (trades['ts'] <= end)
         filter_ &= (trades['symbol'] == symbol)
         data = trades[filter_]
 
         plot = data.plot(x='ts', y='px')
+        plot.xaxis.set_major_formatter(fmt)
+        plot.legend().remove()
         fig = plot.get_figure()
-        plt.axvline(ts, color='r')
+        plt.plot(ts, signal['px'], 'x', mew=2, ms=20, color='r')
+        plt.plot((signal['watch_ts'], ts), (signal['px'], signal['px']), 'k:')
+        plt.plot((signal['watch_ts'], signal['watch_ts']), (signal['watch_px'], signal['px']), 'k:')
+        plt.plot((signal['slowdown_ts'], ts), (signal['px'], signal['px']), 'k:')
+        plt.plot((signal['slowdown_ts'], signal['slowdown_ts']), (signal['slowdown_px'], signal['px'])), 'k:'
         plt.title(symbol)
+        plt.xlabel('time (UTC)')
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
         plt.close()
-        figures.append(base64.b64encode(buf.getvalue()).decode('ascii'))
+        graph_figure = base64.b64encode(buf.getvalue()).decode('ascii')
+        graphs.append(graph_figure)
 
-    print_html(metadata, figures)
+    print_html(metadata, graphs)
 
