@@ -2,17 +2,23 @@
 
 set -e
 
-#DATE=`date +"%Y%m%d`
-DATE=20160505
+DATE=`date +"%Y%m%d`
+LOG=session.$DATE.jsonl
+DATA=data.$DATE.jsonl.gz
+REPORT=report.$DATE.html
 
 echo "Extracting data from $DATE logs"
-grep DATA session.$DATE.jsonl | gzip > $HOME/recoil/data/data.$DATE.jsonl.gz
+grep DATA $LOG | gzip > $HOME/recoil/data/$DATA
 
-echo "Creating report (report.$DATE.html)"
-python src/report.py < session.$DATE.jsonl > report.$DATE.html
+echo "Creating report ($REPORT)"
+python src/report.py < $LOG > $REPORT
 
 echo "Back up market data to AWS S3"
 aws s3 sync $HOME/recoil/data s3://ltcm/data --size-only
+
+# TODO: when going online, stop deleting logs but start storing instead
+echo "Cleaning session logs"
+rm $LOG
 
 echo "Done."
 
