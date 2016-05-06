@@ -1,6 +1,4 @@
 
-# repo for trading bot
-
 ## TODO
 * ~~setup connection with IB's TWS~~
 * ~~handle inbound market data~~
