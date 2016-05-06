@@ -85,7 +85,7 @@ class RecoilBot(object):
         inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
 
         watch_dur_ago = ts - np.timedelta64(self.watch_dur, 's')
-        watch_ts = inst_trades.index.asof(watch_dur_ago)
+        watch_ts = inst_trades.index[::-1].asof(watch_dur_ago)
 
         slowdown_dur_ago = ts - np.timedelta64(self.slowdown_dur, 's')
         slowdown_ts = inst_trades.index.asof(slowdown_dur_ago)
