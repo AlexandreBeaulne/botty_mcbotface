@@ -113,7 +113,6 @@ if __name__ == '__main__':
         data = trades[filter_]
 
         plot = data.plot(x='ts', y='px')
-        plot.xaxis.set_major_formatter(fmt)
         plot.legend().remove()
         fig = plot.get_figure()
         plt.plot(ts, signal['px'], 'x', mew=2, ms=20, color='r')
@@ -122,7 +121,8 @@ if __name__ == '__main__':
         plt.plot((signal['slowdown_ts'], ts), (signal['px'], signal['px']), 'k:')
         plt.plot((signal['slowdown_ts'], signal['slowdown_ts']), (signal['slowdown_px'], signal['px'])), 'k:'
         plt.title(symbol)
-        plt.xlabel('time (UTC)')
+        #plot.xaxis.set_major_formatter(fmt)
+        plot.xaxis_date(tz='Asia/Hong_Kong') # TODO sort out timezone everywhere
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
         plt.close()

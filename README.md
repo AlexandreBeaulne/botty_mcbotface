@@ -9,6 +9,7 @@
 * ~~develop a mock TWS server to test bot during off hours, backtesting, scenarios, etc~~
 * ~~start running live~~
 * ~~end-of-day script that produce report and backup data (S3?)~~
+* sort out timezones situation
 * improve daily report
 * move report hosting from github to S3?
 * carve out signal module and move to github
