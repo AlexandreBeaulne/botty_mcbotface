@@ -11,8 +11,8 @@ def now():
 class Logger(object):
 
     def __init__(self):
-        log = 'recoil.{}.jsonl'.format(datetime.now().strftime('%Y%m%d.%H%M%S'))
-        self.fh = open(log, 'w')
+        log = 'recoil.{}.jsonl'.format(datetime.now().strftime('%Y%m%d'))
+        self.fh = open(log, 'a')
 
     def __log__(self, type_, msg):
         msg = copy.deepcopy(msg)
