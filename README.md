@@ -8,8 +8,9 @@
 * ~~write script to translate the bot's logs into pretty human readable report~~
 * ~~develop a mock TWS server to test bot during off hours, backtesting, scenarios, etc~~
 * ~~start running live~~
-* end-of-day script that produce report and backup data (S3?)
+* ~~end-of-day script that produce report and backup data (S3?)~~
 * improve daily report
+* move report hosting from github to S3?
 * carve out signal module and move to github
 * run an autocorrelation/backtesting analysis
 * develop a market scanner to dynamically scan for instruments to watch
