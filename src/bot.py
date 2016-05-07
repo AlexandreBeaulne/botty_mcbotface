@@ -104,10 +104,10 @@ class RecoilBot(object):
            abs(slowdown_chng) <= self.slowdown_threshold:
                self.log.order({'msg': 'signal triggered', 'ts': ts,
                                'tickerId': ticker_id, 'current_px': px,
-                               'watch_ts': watch_ts.isoformat(),
+                               'watch_ts': pd.to_datetime(watch_ts).isoformat(),
                                'watch_px': watch_px,
                                'watch_chng': watch_chng,
-                               'slowdown_ts': slowdown_ts.isoformat(),
+                               'slowdown_ts': pd.to_datetime(slowdown_ts).isoformat(),
                                'slowdown_px': slowdown_px,
                                'slowdown_chng': slowdown_chng})
 

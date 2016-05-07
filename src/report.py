@@ -1,26 +1,11 @@
 
 import sys
 import json
-import argparse
-import collections
-import datetime
 import io
 import base64
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib import dates
-
-def parse_ts(ts):
-    if len(ts) == 26: # TODO fix this hack for timestamps
-        fmt = '%Y-%m-%dT%H:%M:%S.%f'
-        offset = -4
-    else:
-        fmt = '%Y-%m-%dT%H:%M:%S.%f%z'
-        offset = -12
-    ts  = datetime.datetime.strptime(ts, fmt)
-    ts += datetime.timedelta(hours=offset)
-    return np.datetime64(ts.isoformat())
 
 def get_symbol(inst_map, ticker_id):
     return inst_map.get(ticker_id, 'ticker ID: {}'.format(ticker_id))
@@ -76,19 +61,19 @@ if __name__ == '__main__':
             # trade price
             if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
                 symbol = get_symbol(inst_map, log['msg']['tickerId'])
-                ts = parse_ts(log['ts'])
+                ts = np.datetime64(log['ts'])
                 px = log['msg']['price']
                 trades.append({'symbol': symbol, 'ts': ts, 'px': px})
 
         elif log['type'] == 'ORDER' and log['msg']['msg'] == 'signal triggered':
             signal = dict()
             signal['symbol'] = get_symbol(inst_map, log['msg']['tickerId'])
-            signal['ts'] = parse_ts(log['ts'])
+            signal['ts'] = np.datetime64(log['ts'])
             signal['px'] = log['msg']['current_px']
-            signal['watch_ts'] = parse_ts(log['msg']['watch_ts'])
+            signal['watch_ts'] = np.datetime64(log['msg']['watch_ts'])
             signal['watch_px'] = log['msg']['watch_px']
             signal['watch_chng'] = log['msg']['watch_chng']
-            signal['slowdown_ts'] = parse_ts(log['msg']['slowdown_ts'])
+            signal['slowdown_ts'] = np.datetime64(log['msg']['slowdown_ts'])
             signal['slowdown_px'] = log['msg']['slowdown_px']
             signal['slowdown_chng'] = log['msg']['slowdown_chng']
             signals.append(signal)
@@ -102,7 +87,6 @@ if __name__ == '__main__':
     trades = pd.DataFrame(trades)
     graphs = []
 
-    fmt = dates.DateFormatter('%H:%M:%S')
     for signal in signals:
         ts = signal['ts']
         symbol = signal['symbol']
@@ -119,10 +103,8 @@ if __name__ == '__main__':
         plt.plot((signal['watch_ts'], ts), (signal['px'], signal['px']), 'k:')
         plt.plot((signal['watch_ts'], signal['watch_ts']), (signal['watch_px'], signal['px']), 'k:')
         plt.plot((signal['slowdown_ts'], ts), (signal['px'], signal['px']), 'k:')
-        plt.plot((signal['slowdown_ts'], signal['slowdown_ts']), (signal['slowdown_px'], signal['px'])), 'k:'
+        plt.plot((signal['slowdown_ts'], signal['slowdown_ts']), (signal['slowdown_px'], signal['px']), 'k:')
         plt.title(symbol)
-        #plot.xaxis.set_major_formatter(fmt)
-        plot.xaxis_date(tz='Asia/Hong_Kong') # TODO sort out timezone everywhere
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
         plt.close()
