@@ -9,11 +9,10 @@
 * ~~develop a mock TWS server to test bot during off hours, backtesting, scenarios, etc~~
 * ~~start running live~~
 * ~~end-of-day script that produce report and backup data (S3?)~~
-* sort out timezones situation
-* improve daily report
+* ~~sort out timezones situation~~
+* improve daily report, add scaled and lined up graph with stats
 * move report hosting from github to S3?
 * carve out signal module and move to github
-* run an autocorrelation/backtesting analysis
 * develop a market scanner to dynamically scan for instruments to watch
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 * move to Amazon AWS
