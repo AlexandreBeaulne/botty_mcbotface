@@ -10,7 +10,6 @@ import queue
 import collections
 import numpy as np
 import pandas as pd
-from datetime import datetime
 
 from wrapper import Wrapper
 from utils import Logger
@@ -54,10 +53,9 @@ class RecoilBot(object):
             with open(self.replay_file, 'r') as fh:
                 for line in fh:
                     line = json.loads(line)
-                    if line['type'] == 'DATA':
-                        msg = line['msg']
-                        msg['ts'] = np.datetime64(line['ts'][:-5])
-                        self.msgs.put(msg)
+                    msg = line['msg']
+                    msg['ts'] = np.datetime64(line['ts'])
+                    self.msgs.put(msg)
         else:
             template = 'Attempting to connect host: {} port: {}...'
             self.log.operation(template.format(self.host, self.port))

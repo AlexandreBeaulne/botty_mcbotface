@@ -3,7 +3,7 @@
 set -e
 
 DATE=`date +"%Y%m%d"`
-LOG=recoil.$DATE.jsonl
+LOG=log.$DATE.jsonl
 DATA=data.$DATE.jsonl.gz
 REPORT=report.$DATE.html
 
