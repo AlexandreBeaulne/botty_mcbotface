@@ -71,14 +71,14 @@ if __name__ == '__main__':
 
             # trade price
             if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
-                symbol = inst_map[log['msg']['tickerId']]
+                symbol = inst_map.get(log['msg']['tickerId'], log['msg']['tickerId'])
                 ts = parse_ts(log['ts'])
                 px = log['msg']['price']
                 trades.append({'symbol': symbol, 'ts': ts, 'px': px})
 
         elif log['type'] == 'ORDER' and log['msg']['msg'] == 'signal triggered':
             signal = dict()
-            signal['symbol'] = inst_map[log['msg']['tickerId']]
+            signal['symbol'] = inst_map.get(log['msg']['tickerId'], log['msg']['tickerId'])
             signal['ts'] = parse_ts(log['ts'])
             signal['px'] = log['msg']['current_px']
             signal['direction'] = log['msg']['direction']
