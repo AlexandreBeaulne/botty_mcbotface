@@ -166,11 +166,10 @@ if __name__ == '__main__':
     parser.add_argument('--replay-file')
     args = parser.parse_args()
 
-    log = Logger()
-
     config = json.load(args.config)
     config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
     config['replay_file'] = args.replay_file
+    log = Logger('replay' if args.replay_file else 'log')
     log.operation({"config": config})
 
     config['logger'] = log

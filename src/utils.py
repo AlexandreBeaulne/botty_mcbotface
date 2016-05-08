@@ -21,9 +21,16 @@ def now():
 
 class Logger(object):
 
-    def __init__(self):
-        log = 'log.{}.jsonl'.format(datetime.utcnow().strftime('%Y%m%d'))
-        self.fh = open(log, 'a')
+    def __init__(self, mode):
+        if mode == 'log':
+            datestr = datetime.utcnow().strftime('%Y%m%d')
+        elif mode == 'replay':
+            datestr = datetime.utcnow().strftime('%Y%m%d.%H%M%S')
+        else:
+            print('ERROR unknown mode')
+            raise Exception
+        file_ = '{}.{}.jsonl'.format(mode, datestr)
+        self.fh = open(file_, 'a')
 
     def __log__(self, type_, msg):
         msg = copy.deepcopy(msg)
