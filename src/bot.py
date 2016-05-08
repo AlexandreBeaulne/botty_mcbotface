@@ -99,17 +99,23 @@ class RecoilBot(object):
         slowdown_px = inst_trades.loc[slowdown_ts]['px']
         slowdown_chng = (px - slowdown_px) / slowdown_px
 
-        # check if signal is triggered
-        if abs(watch_chng) >= self.watch_threshold and \
-           abs(slowdown_chng) <= self.slowdown_threshold:
-               self.log.order({'msg': 'signal triggered', 'ts': ts,
-                               'tickerId': ticker_id, 'current_px': px,
-                               'watch_ts': pd.to_datetime(watch_ts).isoformat(),
-                               'watch_px': watch_px,
-                               'watch_chng': watch_chng,
-                               'slowdown_ts': pd.to_datetime(slowdown_ts).isoformat(),
-                               'slowdown_px': slowdown_px,
-                               'slowdown_chng': slowdown_chng})
+        # check if there was price movement
+        if not (abs(watch_chng) >= self.watch_threshold):
+            return
+
+        # check if price movement slowed enough
+        if not (abs(slowdown_chng) <= self.slowdown_threshold):
+            return
+
+        direction = 'long' if watch_chng < 0 else 'short'
+        return {'msg': 'signal triggered', 'ts': ts,
+                'tickerId': ticker_id, 'current_px': px,
+                'watch_ts': pd.to_datetime(watch_ts).isoformat(),
+                'watch_px': watch_px, 'direction': direction,
+                'watch_chng': watch_chng,
+                'slowdown_ts': pd.to_datetime(slowdown_ts).isoformat(),
+                'slowdown_px': slowdown_px,
+                'slowdown_chng': slowdown_chng}
 
     def handle_trade(self, msg):
 
@@ -122,7 +128,9 @@ class RecoilBot(object):
         self.trades = self.trades.append(pd.DataFrame(data, index=[ts]))
 
         # second check if any signal is triggered
-        self.check_for_triggered_signal(ticker_id, ts, px)
+        signal = self.check_for_triggered_signal(ticker_id, ts, px)
+        if signal:
+           self.log.order(signal)
 
     def handle_tick_price(self, msg):
         """

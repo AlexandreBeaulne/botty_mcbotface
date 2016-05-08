@@ -87,6 +87,7 @@ if __name__ == '__main__':
             signal['symbol'] = inst_map[log['msg']['tickerId']]
             signal['ts'] = parse_ts(log['ts'])
             signal['px'] = log['msg']['current_px']
+            signal['direction'] = log['msg']['direction']
             signal['watch_ts'] = parse_ts(log['msg']['watch_ts'])
             signal['watch_px'] = log['msg']['watch_px']
             signal['watch_chng'] = log['msg']['watch_chng']
@@ -119,6 +120,7 @@ if __name__ == '__main__':
         slowdown_ts = unix_ts(signal['slowdown_ts'])
         slowdown_px = signal['slowdown_px']
         px = signal['px']
+        direction = signal['direction']
 
         # isolate data around the signal
         start = ts - np.timedelta64(2 * watch_duration, 's')
@@ -131,6 +133,8 @@ if __name__ == '__main__':
         xs = [unix_ts(ts) for ts in data['ts']]
         xticks = range(floor(unix_ts(start)/10)*10, ceil(unix_ts(end)/10)*10, 10)
         plt.plot(xs, data['px'])
+        fmt = '{}: {} signal on {}'
+        plt.title(fmt.format(pretty_ts(ts), direction.upper(), symbol))
         ts = unix_ts(ts)
         plt.plot(ts, px, 'x', mew=2, ms=20, color='r')
         plt.plot((watch_ts, ts), (px, px), 'k:')
@@ -139,7 +143,6 @@ if __name__ == '__main__':
         plt.plot((slowdown_ts, slowdown_ts), (slowdown_px, px), 'k:')
         labels = [pretty_label(x) for x in xticks]
         plt.xticks(xticks, labels, rotation='vertical')
-        plt.title(symbol)
         plt.tight_layout()
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
