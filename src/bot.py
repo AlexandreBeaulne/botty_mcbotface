@@ -162,8 +162,8 @@ class RecoilBot(object):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="recoil trading bot")
-    config_file = parser.add_argument('--config', type=argparse.FileType('r'))
-    replay_file = parser.add_argument('--replay-file')
+    parser.add_argument('--config', type=argparse.FileType('r'))
+    parser.add_argument('--replay-file')
     args = parser.parse_args()
 
     log = Logger()

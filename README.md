@@ -10,7 +10,9 @@
 * ~~start running live~~
 * ~~end-of-day script that produce report and backup data (S3?)~~
 * ~~sort out timezones situation~~
-* improve daily report, add scaled and lined up graph with stats
+* ~~improve daily report~~
+* add scaled and lined up graph with stats
+* refactor and consolidate report scripts
 * move report hosting from github to S3?
 * carve out signal module and move to github
 * develop a market scanner to dynamically scan for instruments to watch
