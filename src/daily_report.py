@@ -8,11 +8,9 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from utils import unix_ts, parse_ts
 from math import floor, ceil
 from datetime import timezone, timedelta, datetime
-
-def unix_ts(ts):
-    return pd.to_datetime(ts).timestamp()
 
 def pretty_label(ts, offset=-4):
     ts = datetime.fromtimestamp(ts).replace(tzinfo=timezone(timedelta()))
@@ -22,10 +20,6 @@ def pretty_ts(ts, offset=-4):
     ts = pd.to_datetime(ts).tz_localize('UTC')
     ts = ts.astimezone(timezone(timedelta(hours=offset)))
     return ts.strftime('%A %B %d %Y, %H:%M:%S %Z')
-
-def parse_ts(ts):
-    # times are in UTC in logs
-    return np.datetime64(ts+'+0000')
 
 def print_html(metadata, figures):
     print("""

@@ -6,6 +6,13 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
+def unix_ts(ts):
+    return pd.to_datetime(ts).timestamp()
+
+def parse_ts(ts):
+    # times are in UTC in logs
+    return np.datetime64(ts+'+0000')
+
 def ts():
     return datetime.utcnow().isoformat()
 

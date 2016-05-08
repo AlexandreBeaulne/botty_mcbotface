@@ -8,13 +8,18 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from utils import unix_ts, parse_ts
 
-def unix_ts(ts):
-    return pd.to_datetime(ts).timestamp()
+EXIT_PERIOD = 20 # exit time of trade in seconds
 
-def parse_ts(ts):
-    # times are in UTC in logs
-    return np.datetime64(ts+'+0000')
+def asof(xs, ys, offset):
+    if offset < xs[0]:
+        print('ERROR impossible asof parameters')
+        raise Exception
+    for x, y in zip(xs, [None] + ys):
+        if x > offset:
+            return y
+    return y
 
 def print_html(figures):
     print("""
@@ -25,6 +30,8 @@ def print_html(figures):
     <title>report</title></head><body>""")
 
     print('<h1>Aggregated Report</h1>')
+
+    print('<h4>* Pre fees and slippage</h4>')
 
     for figure in figures:
         print("<img src='data:image/png;base64,{}'/></td></tr>".format(figure))
@@ -91,15 +98,26 @@ if __name__ == '__main__':
             ts = unix_ts(ts)
 
             signal = {'xs': [unix_ts(x) - ts for x in data['ts']],
-                      'ys': data['px'] / px}
+                      'ys': (data['px'] / px).tolist()}
             if direction == 'long':
                 long_signals.append(signal)
             elif direction == 'short':
                 short_signals.append(signal)
 
+    long_returns = []
+    for signal in long_signals:
+        long_returns.append(asof(signal['xs'], signal['ys'], EXIT_PERIOD))
+    long_num_signals = len(long_signals)
+    num_good_calls = [r for r in long_returns if r > 1]
+    long_pcnt_good_calls = round(100 * len(num_good_calls) / long_num_signals)
+    num_bad_calls = [r for r in long_returns if r < 1]
+    long_pcnt_bad_calls = round(100 * len(num_bad_calls) / long_num_signals)
+
     for signal in long_signals:
         plt.plot(signal['xs'], signal['ys'])
-    plt.title('{} LONG signals'.format(len(long_signals)))
+    fmt = '{} LONG signals: {}% good calls, {}% bad calls after {}s'
+    plt.title(fmt.format(long_num_signals, long_pcnt_good_calls,
+        long_pcnt_bad_calls, EXIT_PERIOD))
     plt.tight_layout()
     plt.xlabel('seconds (signal == 0)')
     plt.ylabel('price (signal == 1)')
@@ -111,9 +129,21 @@ if __name__ == '__main__':
 
     plt.clf()
 
+    short_returns = []
+    for signal in short_signals:
+        short_returns.append(asof(signal['xs'], signal['ys'], EXIT_PERIOD))
+    short_num_signals = len(short_signals)
+    num_good_calls = [r for r in short_returns if r < 1]
+    short_pcnt_good_calls = round(100 * len(num_good_calls) / short_num_signals)
+    num_bad_calls = [r for r in short_returns if r > 1]
+    short_pcnt_bad_calls = round(100 * len(num_bad_calls) / short_num_signals)
+
     for signal in short_signals:
         plt.plot(signal['xs'], signal['ys'])
-    plt.title('{} SHORT signals'.format(len(short_signals)))
+    fmt = '{} short signals: {}% good calls, {}% bad calls after {}s'
+    plt.title(fmt.format(short_num_signals, short_pcnt_good_calls,
+        short_pcnt_bad_calls, EXIT_PERIOD))
+    plt.tight_layout()
     plt.xlabel('seconds (signal == 0)')
     plt.ylabel('price (signal == 1)')
     plt.tight_layout()
