@@ -11,12 +11,12 @@ class Wrapper(EWrapper):
         self.inst_map = inst_map
 
     def tickPrice(self, tickerId, field, px, _canAutoExecute):
-        msg = {'type': 'tickPrice', 'symbol': self.inst_map[tickerId], 'field': field,
+        msg = {'type': 'tickPrice', 'symbol': self.inst_map[tickerId]['symbol'], 'field': field,
                'price': px, 'ts': now()}
         self.msgs.put(msg)
 
     def tickSize(self, tickerId, field, sz):
-        msg = {'type': 'tickSize', 'symbol': self.inst_map[tickerId], 'field': field,
+        msg = {'type': 'tickSize', 'symbol': self.inst_map[tickerId]['symbol'], 'field': field,
                'size': sz, 'ts': now()}
         self.msgs.put(msg)
 
@@ -25,12 +25,12 @@ class Wrapper(EWrapper):
         pass
 
     def tickGeneric(self, tickerId, tickType, value):
-        msg = {'type': 'tickGeneric', 'symbol': self.inst_map[tickerId],
+        msg = {'type': 'tickGeneric', 'symbol': self.inst_map[tickerId]['symbol'],
                'tickType': tickType, 'value': value, 'ts': now()}
         self.msgs.put(msg)
 
     def tickString(self, tickerId, tickType, value):
-        msg = {'type': 'tickString', 'symbol': self.inst_map[tickerId],
+        msg = {'type': 'tickString', 'symbol': self.inst_map[tickerId]['symbol'],
                'tickType': tickType, 'value': value, 'ts': now()}
         self.msgs.put(msg)
 
