@@ -65,14 +65,14 @@ if __name__ == '__main__':
 
                     # trade price
                     if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
-                        ticker_id = log['msg']['tickerId']
+                        symbol = log['msg']['symbol']
                         ts = parse_ts(log['ts'])
                         px = log['msg']['price']
-                        trades.append({'ts': ts, 'px': px, 'tickerId': ticker_id})
+                        trades.append({'ts': ts, 'px': px, 'symbol': symbol})
 
                 elif log['type'] == 'ORDER' and log['msg']['msg'] == 'signal triggered':
                     signal = dict()
-                    signal['tickerId'] = log['msg']['tickerId']
+                    signal['symbol'] = log['msg']['symbol']
                     signal['ts'] = parse_ts(log['ts'])
                     signal['px'] = log['msg']['current_px']
                     signal['direction'] = log['msg']['direction']
@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
             # extract vars for the graphs
             ts = signal['ts']
-            ticker_id = signal['tickerId']
+            symbol = signal['symbol']
             px = signal['px']
             direction = signal['direction']
 
@@ -93,7 +93,7 @@ if __name__ == '__main__':
             start = ts - np.timedelta64(2 * watch_duration, 's')
             end = ts + np.timedelta64(2 * watch_duration, 's')
             filter_ = (trades['ts'] >= start) & (trades['ts'] <= end)
-            filter_ &= (trades['tickerId'] == ticker_id)
+            filter_ &= (trades['symbol'] == symbol)
             data = trades[filter_]
             ts = unix_ts(ts)
 

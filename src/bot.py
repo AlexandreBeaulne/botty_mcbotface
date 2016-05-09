@@ -34,7 +34,7 @@ class RecoilBot(object):
         self.bbos = collections.defaultdict(dict)
         ## create trades df with a dummy row for have right column types
         dummy_ts = np.datetime64('1970-01-01')
-        self.trades = pd.DataFrame({'tickerId': -1, 'px': -1}, index=[dummy_ts])
+        self.trades = pd.DataFrame({'symbol': 'acme', 'px': -1}, index=[dummy_ts])
 
         # operations
         self.host = host
@@ -43,7 +43,7 @@ class RecoilBot(object):
             self.replay_file = replay_file
         else:
             self.replay_file = None
-            self.wrapper = Wrapper(self.msgs)
+            self.wrapper = Wrapper(self.instruments, self.msgs)
             self.connection = EClientSocket(self.wrapper)
         self.log = logger
 
@@ -78,9 +78,9 @@ class RecoilBot(object):
                 contract.m_exchange = instrument['exchange']
                 self.connection.reqMktData(ticker_id, contract, '', False)
 
-    def check_for_triggered_signal(self, ticker_id, ts, px):
+    def check_for_triggered_signal(self, symbol, ts, px):
 
-        inst_trades = self.trades[self.trades['tickerId'] == ticker_id]
+        inst_trades = self.trades[self.trades['symbol'] == symbol]
 
         watch_dur_ago = ts - np.timedelta64(self.watch_dur, 's')
         watch_ts = inst_trades.index[::-1].asof(watch_dur_ago)
@@ -109,7 +109,7 @@ class RecoilBot(object):
 
         direction = 'long' if watch_chng < 0 else 'short'
         return {'msg': 'signal triggered', 'ts': ts,
-                'tickerId': ticker_id, 'current_px': px,
+                'symbol': symbol, 'current_px': px,
                 'watch_ts': pd.to_datetime(watch_ts).isoformat(),
                 'watch_px': watch_px, 'direction': direction,
                 'watch_chng': watch_chng,
@@ -120,15 +120,15 @@ class RecoilBot(object):
     def handle_trade(self, msg):
 
         ts = msg['ts']
-        ticker_id = msg['tickerId']
+        symbol = msg['symbol']
         px = msg['price']
 
         # first append trade to trades table
-        data = {'tickerId': ticker_id, 'px': px}
+        data = {'symbol': symbol, 'px': px}
         self.trades = self.trades.append(pd.DataFrame(data, index=[ts]))
 
         # second check if any signal is triggered
-        signal = self.check_for_triggered_signal(ticker_id, ts, px)
+        signal = self.check_for_triggered_signal(symbol, ts, px)
         if signal:
            self.log.order(signal)
 
@@ -138,9 +138,9 @@ class RecoilBot(object):
                          6 = high, 7 = low, 9 = close
         """
         if msg['field'] == 1:
-            self.bbos[msg['tickerId']]['bid'] = msg['price']
+            self.bbos[msg['symbol']]['bid'] = msg['price']
         elif msg['field'] == 2:
-            self.bbos[msg['tickerId']]['ask'] = msg['price']
+            self.bbos[msg['symbol']]['ask'] = msg['price']
         elif msg['field'] == 4:
             self.handle_trade(msg)
 

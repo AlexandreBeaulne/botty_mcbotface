@@ -5,17 +5,18 @@ from ib.ext.EWrapper import EWrapper
 
 class Wrapper(EWrapper):
 
-    def __init__(self, msgs):
+    def __init__(self, inst_map, msgs):
         super(Wrapper, self).__init__()
         self.msgs = msgs
+        self.inst_map = inst_map
 
     def tickPrice(self, tickerId, field, px, _canAutoExecute):
-        msg = {'type': 'tickPrice', 'tickerId': tickerId, 'field': field,
+        msg = {'type': 'tickPrice', 'symbol': self.inst_map[tickerId], 'field': field,
                'price': px, 'ts': now()}
         self.msgs.put(msg)
 
     def tickSize(self, tickerId, field, sz):
-        msg = {'type': 'tickSize', 'tickerId': tickerId, 'field': field,
+        msg = {'type': 'tickSize', 'symbol': self.inst_map[tickerId], 'field': field,
                'size': sz, 'ts': now()}
         self.msgs.put(msg)
 
@@ -24,12 +25,12 @@ class Wrapper(EWrapper):
         pass
 
     def tickGeneric(self, tickerId, tickType, value):
-        msg = {'type': 'tickGeneric', 'tickerId': tickerId, 
+        msg = {'type': 'tickGeneric', 'symbol': self.inst_map[tickerId],
                'tickType': tickType, 'value': value, 'ts': now()}
         self.msgs.put(msg)
 
     def tickString(self, tickerId, tickType, value):
-        msg = {'type': 'tickString', 'tickerId': tickerId, 
+        msg = {'type': 'tickString', 'symbol': self.inst_map[tickerId],
                'tickType': tickType, 'value': value, 'ts': now()}
         self.msgs.put(msg)
 

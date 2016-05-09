@@ -64,21 +64,19 @@ if __name__ == '__main__':
             watch_duration = log['msg']['config']['watch_duration']
             slowdown_threshold = log['msg']['config']['slowdown_threshold']
             slowdown_duration = log['msg']['config']['slowdown_duration']
-            inst_map = log['msg']['config']['instruments']
-            inst_map = {int(i):c['symbol'] for i, c in inst_map.items()}
 
         elif log['type'] == 'DATA':
 
             # trade price
             if log['msg']['type'] == 'tickPrice' and log['msg']['field'] == 4:
-                symbol = inst_map.get(log['msg']['tickerId'], log['msg']['tickerId'])
+                symbol = log['msg']['symbol']
                 ts = parse_ts(log['ts'])
                 px = log['msg']['price']
                 trades.append({'symbol': symbol, 'ts': ts, 'px': px})
 
         elif log['type'] == 'ORDER' and log['msg']['msg'] == 'signal triggered':
             signal = dict()
-            signal['symbol'] = inst_map.get(log['msg']['tickerId'], log['msg']['tickerId'])
+            signal['symbol'] = log['msg']['symbol']
             signal['ts'] = parse_ts(log['ts'])
             signal['px'] = log['msg']['current_px']
             signal['direction'] = log['msg']['direction']
@@ -97,7 +95,7 @@ if __name__ == '__main__':
     metadata['slowdown_duration'] = slowdown_duration
     metadata['start'] = pretty_ts(trades[0]['ts'])
     metadata['end'] = pretty_ts(trades[-1]['ts'])
-    metadata['num_instruments'] = len(inst_map)
+    metadata['num_instruments'] = len({signal['symbol'] for signal in signals})
     metadata['num_trades'] = len(trades)
     metadata['num_signals'] = len(signals)
 
