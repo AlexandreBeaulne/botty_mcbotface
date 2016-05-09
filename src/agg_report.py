@@ -31,7 +31,11 @@ def print_html(figures):
 
     print('<h1>Aggregated Report</h1>')
 
-    print('<h4>* Pre fees and slippage</h4>')
+    print('<ul>')
+    print('<li>Pre fees and slippage</li>')
+    print('<li>"Good" call is when price moved in right direction</li>')
+    print('<li>"Bad" call is when price moved in wrong direction or didnt move</li>')
+    print('</ul>')
 
     for figure in figures:
         print("<img src='data:image/png;base64,{}'/></td></tr>".format(figure))
@@ -110,7 +114,7 @@ if __name__ == '__main__':
     long_num_signals = len(long_signals)
     num_good_calls = [r for r in long_returns if r > 1]
     long_pcnt_good_calls = round(100 * len(num_good_calls) / long_num_signals)
-    num_bad_calls = [r for r in long_returns if r < 1]
+    num_bad_calls = [r for r in long_returns if r <= 1]
     long_pcnt_bad_calls = round(100 * len(num_bad_calls) / long_num_signals)
 
     for signal in long_signals:
@@ -135,7 +139,7 @@ if __name__ == '__main__':
     short_num_signals = len(short_signals)
     num_good_calls = [r for r in short_returns if r < 1]
     short_pcnt_good_calls = round(100 * len(num_good_calls) / short_num_signals)
-    num_bad_calls = [r for r in short_returns if r > 1]
+    num_bad_calls = [r for r in short_returns if r >= 1]
     short_pcnt_bad_calls = round(100 * len(num_bad_calls) / short_num_signals)
 
     for signal in short_signals:
