@@ -95,7 +95,7 @@ if __name__ == '__main__':
     metadata['slowdown_duration'] = slowdown_duration
     metadata['start'] = pretty_ts(trades[0]['ts'])
     metadata['end'] = pretty_ts(trades[-1]['ts'])
-    metadata['num_instruments'] = len({signal['symbol'] for signal in signals})
+    metadata['num_instruments'] = len({trade['symbol'] for trade in trades})
     metadata['num_trades'] = len(trades)
     metadata['num_signals'] = len(signals)
 
