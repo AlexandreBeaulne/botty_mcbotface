@@ -134,8 +134,8 @@ class RecoilBot(object):
 
     def handle_tick_price(self, msg):
         """
-        field semantics: 1 = bid, 2 = ask, 4 = last,
-                         6 = high, 7 = low, 9 = close
+        field semantics: 1 = bid px, 2 = ask px, 4 = last px,
+                         6 = high px, 7 = low px, 9 = close px
         """
         if msg['field'] == 1:
             self.bbos[msg['symbol']]['bid'] = msg['price']
@@ -145,6 +145,10 @@ class RecoilBot(object):
             self.handle_trade(msg)
 
     def handle_tick_size(self, msg):
+        """
+        field semantics: 0 = bid sz, 3 = ask sz, 5 = last sz,
+                         8 = volume for the day
+        """
         pass
 
     def run(self):
