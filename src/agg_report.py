@@ -94,8 +94,8 @@ if __name__ == '__main__':
             direction = signal['direction']
 
             # isolate data around the signal
-            start = ts - np.timedelta64(2 * watch_duration, 's')
-            end = ts + np.timedelta64(2 * watch_duration, 's')
+            start = ts - np.timedelta64(3 * watch_duration, 's')
+            end = ts + np.timedelta64(3 * watch_duration, 's')
             filter_ = (trades['ts'] >= start) & (trades['ts'] <= end)
             filter_ &= (trades['symbol'] == symbol)
             data = trades[filter_]
