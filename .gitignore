@@ -4,5 +4,4 @@
 *.jsonl
 *.json
 *.gz
-*.html
 __pycache__/

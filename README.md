@@ -13,10 +13,10 @@
 * ~~improve daily report~~
 * ~~add scaled and lined up graph with stats~~
 * ~~host to Amazon AWS~~
-* refactor and consolidate report scripts
+* ~~move report hosting from github to S3~~
+* refactor and consolidate report scripts (Jinja templating, etc)
 * add summary stats to aggregated report: biggest winner and loser, PnL ($ & %)
 * develop a market scanner to dynamically scan for instruments to watch
-* move report hosting from github to S3?
 * carve out signal module and move to github
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 

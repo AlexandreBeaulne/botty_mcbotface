@@ -4,7 +4,7 @@ import time
 import json
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import timezone, timedelta, datetime
 
 def unix_ts(ts):
     return pd.to_datetime(ts).timestamp()
@@ -12,6 +12,20 @@ def unix_ts(ts):
 def parse_ts(ts):
     # times are in UTC in logs
     return np.datetime64(ts+'+0000')
+
+def pretty_date(ts, offset=-4):
+    ts = pd.to_datetime(ts).tz_localize('UTC')
+    ts = ts.astimezone(timezone(timedelta(hours=offset)))
+    return ts.strftime('%Y%m%d')
+
+def pretty_ts(ts, offset=-4):
+    ts = pd.to_datetime(ts).tz_localize('UTC')
+    ts = ts.astimezone(timezone(timedelta(hours=offset)))
+    return ts.strftime('%A %B %d %Y, %H:%M:%S %Z')
+
+def pretty_label(ts, offset=-4):
+    ts = datetime.fromtimestamp(ts).replace(tzinfo=timezone(timedelta()))
+    return ts.astimezone(timezone(timedelta(hours=offset))).strftime('%H:%M:%S')
 
 def ts():
     return datetime.utcnow().isoformat()
