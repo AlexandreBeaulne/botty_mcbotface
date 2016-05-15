@@ -8,13 +8,28 @@
 
 <h1>Report</h1>
 
+<h2>Caveats</h2>
 <ul>
 <li>Pre fees and slippage</li>
-<li>"Good" call is when price moved in right direction</li>
-<li>"Bad" call is when price moved in wrong direction or didnt move</li>
 </ul>
 
-{% for figure in figures %}
+<h2>Parameters</h2>
+
+<table>
+    <tr><td>watch duration:</td><td>{{data['params']['watch_duration']}}s</td></tr>
+    <tr><td>watch threshold:</td><td>{{100 * data['params']['watch_threshold']}}%</td></tr>
+    <tr><td>slowdown duration:</td><td>{{data['params']['slowdown_duration']}}s</td></tr>
+    <tr><td>slowdown threshold:</td><td>{{100 * data['params']['slowdown_threshold']}}%</td></tr>
+    <tr><td>start time:</td><td>{{data['params']['start']}}</td></tr>
+    <tr><td>end time:</td><td>{{data['params']['end']}}</td></tr>
+</table>
+
+<h2>Aggregated signals</h2>
+<img src='data:image/png;base64,{{data['longs']}}'/>
+<img src='data:image/png;base64,{{data['shorts']}}'/>
+
+<h2>Individual signals</h2>
+{% for figure in data['figures'] %}
 <img src='data:image/png;base64,{{figure}}'/>
 {% endfor %}
 

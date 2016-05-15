@@ -103,6 +103,54 @@ def build_graph(signal, params, bbos, trds):
     plt.close()
     return base64.b64encode(buf.getvalue()).decode('ascii')
 
+def normalize_signal(signal, params, trds):
+
+    # extract vars for the graphs
+    ts = signal['ts']
+    symbol = signal['symbol']
+    px = signal['px']
+    direction = signal['direction']
+    watch_duration = params['watch_duration']
+
+    # isolate data around the signal
+    start = ts - np.timedelta64(3 * watch_duration, 's')
+    end = ts + np.timedelta64(3 * watch_duration, 's')
+    filter_ = (trds['ts'] >= start) & (trds['ts'] <= end)
+    filter_ &= (trds['symbol'] == symbol)
+    data = trds[filter_]
+    ts = unix_ts(ts)
+
+    return {'xs': [unix_ts(x) - ts for x in data['ts']],
+            'ys': (data['px'] / px).tolist(), 'direction': direction}
+
+def normalized_graphs(signals):
+
+    longs = [s for s in signals if s['direction'] == 'long']
+    for signal in longs:
+        plt.plot(signal['xs'], signal['ys'])
+    plt.title('{} LONG signals'.format(len(longs)))
+    plt.xlabel('seconds (signal == 0)')
+    plt.ylabel('price (signal == 1)')
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    long_graph_figure = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    shorts = [s for s in signals if s['direction'] == 'short']
+    for signal in shorts:
+        plt.plot(signal['xs'], signal['ys'])
+    plt.title('{} SHORT signals'.format(len(shorts)))
+    plt.xlabel('seconds (signal == 0)')
+    plt.ylabel('price (signal == 1)')
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    short_graph_figure = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    return long_graph_figure, short_graph_figure
+
 def rebuild_index():
 
     for _dirname, _dirnames, filenames in os.walk('reports/'):
@@ -125,19 +173,23 @@ if __name__ == '__main__':
     bbos = pd.read_csv('logs/bbos.csv.gz', parse_dates=['ts'])
     trds = pd.read_csv('logs/trds.csv.gz', parse_dates=['ts'])
 
-    metadata = {}
-    figures = []
-    for signal in signals:
-        figures.append(build_graph(signal, params, bbos, trds))
+    data = dict()
+    data['figures'] = [build_graph(s, params, bbos, trds) for s in signals]
+    normalized = [normalize_signal(s, params, trds) for s in signals]
+    data['longs'], data['shorts'] = normalized_graphs(normalized)
 
     with open('reports/template.html') as fh:
         template = jinja2.Template(fh.read())
 
-    min_date = pretty_date(min([s['ts'] for s in signals]))
-    max_date = pretty_date(max([s['ts'] for s in signals]))
-    filename = 'reports/report.{}.{}.html'.format(min_date, max_date)
+    min_date = min([s['ts'] for s in signals])
+    max_date = max([s['ts'] for s in signals])
+    params['start'] = pretty_ts(min_date)
+    params['end'] = pretty_ts(max_date)
+    data['params'] = params
+    filename = 'reports/report.{}.{}.html'
+    filename = filename.format(pretty_date(min_date), pretty_date(max_date))
     with open(filename, 'w') as fh:
-        fh.write(template.render(figures=figures))
+        fh.write(template.render(data=data))
 
     rebuild_index()
 
