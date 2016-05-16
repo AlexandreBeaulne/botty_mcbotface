@@ -9,13 +9,13 @@ echo "backup $DATE log"
 cat $LOG | gzip > $HOME/recoil/logs/$LOG.gz
 
 echo "extracting data"
-grep DATA $LOG | pytho src/extract_data.py
+grep DATA $LOG | python src/extract_data.py
 
 echo "back up market data to AWS S3"
 aws s3 sync $HOME/recoil/logs s3://ltcm --size-only
 
 echo "generate report"
-python src/report.py --logs $LOG
+python src/report.py --logs $HOME/recoil/logs/$LOG.gz
 
 echo "upload report to to AWS S3"
 aws s3 sync $HOME/recoil/reports s3://ltcm-reports --size-only

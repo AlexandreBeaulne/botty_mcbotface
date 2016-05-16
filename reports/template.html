@@ -28,6 +28,11 @@
 <img src='data:image/png;base64,{{data['longs']}}'/>
 <img src='data:image/png;base64,{{data['shorts']}}'/>
 
+<h2>Outcome distribution</h2>
+{% for graph in data['outcomes'] %}
+<img src='data:image/png;base64,{{graph}}'/>
+{% endfor %}
+
 <h2>Individual signals</h2>
 {% for figure in data['figures'] %}
 <img src='data:image/png;base64,{{figure}}'/>

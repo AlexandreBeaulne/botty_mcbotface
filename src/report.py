@@ -70,7 +70,7 @@ def build_graph(signal, params, bbos, trds):
     # isolate data around the signal
     start = ts - np.timedelta64(3 * watch_duration, 's')
     end = ts + np.timedelta64(3 * watch_duration, 's')
-    filter_ = (trds['ts'] >= start) & (trds['ts'] <= end)
+    filter_ = (trds.index >= start) & (trds.index <= end)
     filter_ &= (trds['symbol'] == symbol)
     trds = trds[filter_]
     filter_ = (bbos['ts'] >= start) & (bbos['ts'] <= end)
@@ -78,7 +78,7 @@ def build_graph(signal, params, bbos, trds):
     bbos = bbos[filter_]
 
     # plot
-    xs = [unix_ts(ts) for ts in trds['ts']]
+    xs = [unix_ts(ts) for ts in trds.index]
     plt.plot(xs, trds['px'], marker='.', color='k', linestyle='', label='trades')
     xs = [unix_ts(ts) for ts in bbos['ts']]
     plt.step(xs, bbos['bid_px'], color='b', label='bids', where='post')
@@ -115,12 +115,12 @@ def normalize_signal(signal, params, trds):
     # isolate data around the signal
     start = ts - np.timedelta64(3 * watch_duration, 's')
     end = ts + np.timedelta64(3 * watch_duration, 's')
-    filter_ = (trds['ts'] >= start) & (trds['ts'] <= end)
+    filter_ = (trds.index >= start) & (trds.index <= end)
     filter_ &= (trds['symbol'] == symbol)
     data = trds[filter_]
     ts = unix_ts(ts)
 
-    return {'xs': [unix_ts(x) - ts for x in data['ts']],
+    return {'xs': [unix_ts(x) - ts for x in data.index],
             'ys': (data['px'] / px).tolist(), 'direction': direction}
 
 def normalized_graphs(signals):
@@ -151,6 +151,43 @@ def normalized_graphs(signals):
 
     return long_graph_figure, short_graph_figure
 
+def compute_outcome(signal, trds):
+    sym = signal['symbol']
+    t0 = signal['ts']
+    px0 = signal['px']
+    dir = signal['direction']
+    mult = {'long': 100, 'short': -100}[dir]
+    outcomes = []
+    df = trds[trds['symbol'] == sym]
+    for delay in [20, 40, 60]:
+        t = df.index.asof(t0 + np.timedelta64(delay, 's'))
+        px = df.loc[t]['px']
+        return_ = mult * (px / px0 - 1)
+        outcome = {'direction': dir, 't': delay, 'return': return_}
+        outcomes.append(outcome)
+    return outcomes
+
+def outcomes_graphs(outcomes):
+    graphs = []
+    for dir in outcomes['direction'].unique():
+       for t in outcomes['t'].unique():
+            df = outcomes[(outcomes['direction'] == dir) & (outcomes['t'] == t)]
+            returns = df['return']
+            plt.hist(returns)
+            plt.xlabel('return (%)')
+            plt.ylabel('frequency')
+            min_ = round(returns.min(), 2)
+            mean = round(returns.mean(), 2)
+            max_ = round(returns.max(), 2)
+            title = '{} calls | t=signal+{}s | min={}% | avg={}% | max={}%'
+            plt.title(title.format(dir, t, min_, mean, max_))
+            plt.tight_layout()
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            plt.close()
+            graphs.append(base64.b64encode(buf.getvalue()).decode('ascii'))
+    return graphs
+
 def rebuild_index():
 
     for _dirname, _dirnames, filenames in os.walk('reports/'):
@@ -172,11 +209,15 @@ if __name__ == '__main__':
 
     bbos = pd.read_csv('logs/bbos.csv.gz', parse_dates=['ts'])
     trds = pd.read_csv('logs/trds.csv.gz', parse_dates=['ts'])
+    trds = trds.set_index('ts')
 
     data = dict()
     data['figures'] = [build_graph(s, params, bbos, trds) for s in signals]
     normalized = [normalize_signal(s, params, trds) for s in signals]
     data['longs'], data['shorts'] = normalized_graphs(normalized)
+    outcomes = [compute_outcome(s, trds) for s in signals]
+    outcomes = pd.DataFrame.from_dict([x for xs in outcomes for x in xs])
+    data['outcomes'] = outcomes_graphs(outcomes)
 
     with open('reports/template.html') as fh:
         template = jinja2.Template(fh.read())
