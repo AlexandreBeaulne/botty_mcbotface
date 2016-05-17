@@ -78,25 +78,39 @@ def build_graph(signal, params, bbos, trds):
     bbos = bbos[filter_]
 
     # plot
+    fig, ax1 = plt.subplots()
     xs = [unix_ts(ts) for ts in trds.index]
-    plt.plot(xs, trds['px'], marker='.', color='k', linestyle='', label='trades')
+    ax1.plot(xs, trds['px'], marker='.', color='k', linestyle='', label='trades')
     xs = [unix_ts(ts) for ts in bbos['ts']]
-    plt.step(xs, bbos['bid_px'], color='b', label='bids', where='post')
-    plt.step(xs, bbos['ask_px'], color='r', label='asks', where='post')
+    ax1.step(xs, bbos['bid_px'], color='b', label='bids', where='post')
+    ax1.step(xs, bbos['ask_px'], color='r', label='asks', where='post')
     fmt = '{}: {} signal on {}'
     plt.title(fmt.format(pretty_ts(ts), direction.upper(), symbol))
     ts = unix_ts(ts)
-    plt.plot(ts, px, 'x', mew=2, ms=20, color='r')
-    plt.plot((watch_ts, ts), (px, px), 'k:')
-    plt.plot((watch_ts, watch_ts), (watch_px, px), 'k:')
-    plt.plot((slowdown_ts, ts), (px, px), 'k:')
-    plt.plot((slowdown_ts, slowdown_ts), (slowdown_px, px), 'k:')
+    ax1.plot(ts, px, 'x', mew=2, ms=20, color='r')
+    ax1.plot((watch_ts, ts), (px, px), 'k:')
+    ax1.plot((watch_ts, watch_ts), (watch_px, px), 'k:')
+    ax1.plot((slowdown_ts, ts), (px, px), 'k:')
+    ax1.plot((slowdown_ts, slowdown_ts), (slowdown_px, px), 'k:')
     xticks = range(floor(unix_ts(start)/10)*10, ceil(unix_ts(end)/10)*10, 10)
     labels = [pretty_label(x) for x in xticks]
     plt.xticks(xticks, labels, rotation='vertical')
     x1, x2, y1, y2 = plt.axis()
     plt.axis((x1, x2, 0.975 * y1, 1.025 * y2))
+    ax1.set_ylabel('price')
     plt.legend(loc=0)
+
+    # volume bars
+    ax2 = ax1.twinx()
+    bin_sz = 5
+    trds = trds.sz.groupby(pd.TimeGrouper('{}s'.format(bin_sz))).sum()
+    xs = [unix_ts(ts) for ts in trds.index]
+    ax2.bar(xs, trds, width=bin_sz)
+    ax2.set_ylabel('volume')
+    x1, x2, y1, y2 = plt.axis()
+    plt.axis((x1, x2, y1, 10 * y2))
+
+    # save to png
     plt.tight_layout()
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
