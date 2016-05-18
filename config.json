@@ -26,7 +26,7 @@
         {"symbol": "CSIQ", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CHK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CCXI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "CECE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CBYL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CROX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "DRNE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "DRYS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
@@ -63,7 +63,7 @@
         {"symbol": "NCQ", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "NEM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "NVDA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "ORIG", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "ORMP", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PCLN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PRGN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PRGO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
@@ -91,7 +91,7 @@
         {"symbol": "WLL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "WAC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "XON", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "YY", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "VIPS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "Z", "currency": "USD", "secType": "STK", "exchange": "SMART"}
     ]
 }
