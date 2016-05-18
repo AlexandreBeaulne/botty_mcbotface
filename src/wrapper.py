@@ -137,7 +137,8 @@ class Wrapper(EWrapper):
         self.msgs.put(msg)
 
     def scannerParameters(self, xml):
-        pass
+        msg = {'type': 'scannerParameters', 'xml': xml}
+        self.msgs.put(msg)
 
     def scannerData(self, reqId, rank, contractDetails, distance, benchmark,
                     projection, legsStr):
