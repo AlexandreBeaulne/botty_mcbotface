@@ -173,7 +173,7 @@ def compute_outcome(signal, trds):
     mult = {'long': 100, 'short': -100}[dir]
     outcomes = []
     df = trds[trds['symbol'] == sym]
-    for delay in [20, 40, 60]:
+    for delay in range(5, 65, 5):
         t = df.index.asof(t0 + np.timedelta64(delay, 's'))
         px = df.loc[t]['px']
         return_ = mult * (px / px0 - 1)
@@ -181,26 +181,20 @@ def compute_outcome(signal, trds):
         outcomes.append(outcome)
     return outcomes
 
-def outcomes_graphs(outcomes):
-    graphs = []
-    for dir in outcomes['direction'].unique():
-       for t in outcomes['t'].unique():
-            df = outcomes[(outcomes['direction'] == dir) & (outcomes['t'] == t)]
-            returns = df['return']
-            plt.hist(returns)
-            plt.xlabel('return (%)')
-            plt.ylabel('frequency')
-            min_ = round(returns.min(), 2)
-            mean = round(returns.mean(), 2)
-            max_ = round(returns.max(), 2)
-            title = '{} calls | t=signal+{}s | min={}% | avg={}% | max={}%'
-            plt.title(title.format(dir, t, min_, mean, max_))
-            plt.tight_layout()
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png')
-            plt.close()
-            graphs.append(base64.b64encode(buf.getvalue()).decode('ascii'))
-    return graphs
+def outcomes_graphs(direction, outcomes):
+    df = outcomes[outcomes['direction'] == direction][['return', 't']]
+    df = df.set_index('t', append=True).unstack()
+    df.columns = df.columns.droplevel()
+    df.plot.box()
+    plt.xlabel('time after signal (s)')
+    plt.ylabel('return (%)')
+    title = '{} calls - distribution of price movements post-signal'
+    plt.title(title.format(direction))
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    return base64.b64encode(buf.getvalue()).decode('ascii')
 
 def rebuild_index():
 
@@ -231,7 +225,8 @@ if __name__ == '__main__':
     data['longs'], data['shorts'] = normalized_graphs(normalized)
     outcomes = [compute_outcome(s, trds) for s in signals]
     outcomes = pd.DataFrame.from_dict([x for xs in outcomes for x in xs])
-    data['outcomes'] = outcomes_graphs(outcomes)
+    data['longs_distn'] = outcomes_graphs('long', outcomes)
+    data['shorts_distn'] = outcomes_graphs('short', outcomes)
 
     with open('reports/template.html') as fh:
         template = jinja2.Template(fh.read())
