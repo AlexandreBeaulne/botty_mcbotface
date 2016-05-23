@@ -142,7 +142,12 @@ class Wrapper(EWrapper):
 
     def scannerData(self, reqId, rank, contractDetails, distance, benchmark,
                     projection, legsStr):
-        pass
+        msg = {'type': 'scannerData', 'reqId': reqId, 'rank': rank,
+               'contractDetails': contractDetails, 'distance': distance,
+               'benchmark': benchmark, 'projection': projection,
+               'legsStr': legsStr}
+        print(contractDetails.m_summary)
+        self.msgs.put(msg)
 
     def accountDownloadEnd(self, accountName):
         pass
@@ -173,7 +178,8 @@ class Wrapper(EWrapper):
         self.msgs.put(msg)
 
     def scannerDataEnd(self, reqId):
-        pass
+        msg = {'type': 'scannerDataEnd', 'reqId': reqId}
+        self.msgs.put(msg)
 
     def tickEFP(self, tickerId, tickType, basisPoints, formattedBasisPoints,
                 impliedFuture, holdDays, futureExpiry, dividendImpact,

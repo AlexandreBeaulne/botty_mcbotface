@@ -36,7 +36,7 @@ def now():
 class Logger(object):
 
     def __init__(self, mode):
-        if mode == 'log':
+        if mode in ['log', 'scanner']:
             datestr = datetime.utcnow().strftime('%Y%m%d')
         elif mode == 'replay':
             datestr = datetime.utcnow().strftime('%Y%m%d.%H%M%S')
