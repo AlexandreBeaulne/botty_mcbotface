@@ -15,7 +15,7 @@
 * ~~host to Amazon AWS~~
 * ~~move report hosting from github to S3~~
 * ~~refactor and consolidate report scripts (Jinja templating, etc)~~
-* add summary stats to aggregated report: biggest winner and loser, PnL ($ & %)
+* ~~add summary stats to aggregated report: biggest winner and loser, PnL ($ & %)~~
 * develop a market scanner to dynamically scan for instruments to watch
 * carve out signal module and move to github
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
