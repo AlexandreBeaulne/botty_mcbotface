@@ -33,6 +33,15 @@ def ts():
 def now():
     return np.datetime64(ts())
 
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.datetime64):
+            return pd.to_datetime(obj).isoformat()
+        if isinstance(obj, np.float32):
+            return float(obj)
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
 class Logger(object):
 
     def __init__(self, mode):
@@ -54,7 +63,7 @@ class Logger(object):
             del msg['ts']
         else:
             timestamp = ts()
-        log = template.format(timestamp, type_, json.dumps(msg))
+        log = template.format(timestamp, type_, json.dumps(msg, cls=NumpyEncoder))
         self.fh.write(log)
         print(log, end='')
 
