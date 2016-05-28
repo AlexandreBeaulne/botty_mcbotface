@@ -18,7 +18,8 @@
 * ~~add summary stats to aggregated report: biggest winner and loser, PnL ($ & %)~~
 * ~~carve out signal module and move to github~~
 * ~~build user-friendly backtesting module~~
-* optimize backtesting module
+* ~~optimize backtesting module~~
+* create decision tree for signals and and max spread condition
 * develop a market scanner to dynamically scan for instruments to watch
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 
