@@ -1,6 +1,6 @@
 
 """
-Trading bot for recoil strat
+Trading bot
 """
 
 import json
@@ -16,7 +16,7 @@ from ib.ext.EClientSocket import EClientSocket
 
 from strategy import Strategy
 
-class RecoilBot(object):
+class Bot(object):
 
     def __init__(self, host, port, instruments, watch_threshold, watch_duration,
                  slowdown_threshold, slowdown_duration, logger, replay_file):
@@ -87,7 +87,7 @@ class RecoilBot(object):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='recoil trading bot')
+    parser = argparse.ArgumentParser(description='bot')
     parser.add_argument('--config', type=argparse.FileType('r'))
     parser.add_argument('--replay-file')
     args = parser.parse_args()
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     log.operation({'config': config})
 
     config['logger'] = log
-    bot = RecoilBot(**config)
+    bot = Bot(**config)
     bot.connect()
     bot.request_data()
     try:
