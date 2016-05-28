@@ -5,11 +5,8 @@ Trading bot for recoil strat
 
 import json
 import argparse
-import time
 import queue
-import collections
 import numpy as np
-import pandas as pd
 
 from wrapper import Wrapper
 from utils import Logger
@@ -17,24 +14,19 @@ from utils import Logger
 from ib.ext.Contract import Contract
 from ib.ext.EClientSocket import EClientSocket
 
+from strategy import Strategy
+
 class RecoilBot(object):
 
     def __init__(self, host, port, instruments, watch_threshold, watch_duration,
                  slowdown_threshold, slowdown_duration, logger, replay_file):
 
+        self.msgs = queue.Queue()
+
         # strategy
         self.instruments = instruments
-        self.watch_threshold = watch_threshold
-        self.watch_dur = watch_duration
-        self.slowdown_threshold = slowdown_threshold
-        self.slowdown_dur = slowdown_duration
-
-        # data
-        self.msgs = queue.Queue()
-        self.bbos = collections.defaultdict(dict)
-        ## create trades df with a dummy row for have right column types
-        dummy_ts = np.datetime64('1970-01-01')
-        self.trades = pd.DataFrame({'symbol': 'acme', 'px': -1}, index=[dummy_ts])
+        self.strategy = Strategy(watch_threshold, watch_duration,
+                slowdown_threshold, slowdown_duration)
 
         # operations
         self.host = host
@@ -43,8 +35,7 @@ class RecoilBot(object):
             self.replay_file = replay_file
         else:
             self.replay_file = None
-            self.wrapper = Wrapper(self.instruments, self.msgs)
-            self.connection = EClientSocket(self.wrapper)
+            self.connection = EClientSocket(Wrapper(self.instruments, self.msgs))
         self.log = logger
 
     def connect(self):
@@ -53,9 +44,10 @@ class RecoilBot(object):
             with open(self.replay_file, 'r') as fh:
                 for line in fh:
                     line = json.loads(line)
-                    msg = line['msg']
-                    msg['ts'] = np.datetime64(line['ts'])
-                    self.msgs.put(msg)
+                    if line['type'] == 'DATA':
+                        msg = line['msg']
+                        msg['ts'] = np.datetime64(line['ts'])
+                        self.msgs.put(msg)
         else:
             template = 'Attempting to connect host: {} port: {}...'
             self.log.operation(template.format(self.host, self.port))
@@ -78,94 +70,24 @@ class RecoilBot(object):
                 contract.m_exchange = instrument['exchange']
                 self.connection.reqMktData(ticker_id, contract, '', False)
 
-    def check_for_triggered_signal(self, symbol, ts, px):
-
-        inst_trades = self.trades[self.trades['symbol'] == symbol]
-
-        watch_dur_ago = ts - np.timedelta64(self.watch_dur, 's')
-        watch_ts = inst_trades.index[::-1].asof(watch_dur_ago)
-
-        slowdown_dur_ago = ts - np.timedelta64(self.slowdown_dur, 's')
-        slowdown_ts = inst_trades.index.asof(slowdown_dur_ago)
-
-        if pd.isnull(watch_ts): # means there's no trades old enough
-            return
-        if pd.isnull(slowdown_ts): # means there's no trades old enough
-            return
-
-        watch_px = inst_trades.loc[watch_ts]['px']
-        watch_chng = (px - watch_px) / watch_px
-
-        slowdown_px = inst_trades.loc[slowdown_ts]['px']
-        slowdown_chng = (px - slowdown_px) / slowdown_px
-
-        # check if there was price movement
-        if not (abs(watch_chng) >= self.watch_threshold):
-            return
-
-        # check if price movement slowed enough
-        if not (abs(slowdown_chng) <= self.slowdown_threshold):
-            return
-
-        direction = 'long' if watch_chng < 0 else 'short'
-        return {'msg': 'signal triggered', 'ts': ts,
-                'symbol': symbol, 'current_px': px,
-                'watch_ts': pd.to_datetime(watch_ts).isoformat(),
-                'watch_px': watch_px, 'direction': direction,
-                'watch_chng': watch_chng,
-                'slowdown_ts': pd.to_datetime(slowdown_ts).isoformat(),
-                'slowdown_px': slowdown_px,
-                'slowdown_chng': slowdown_chng}
-
-    def handle_trade(self, msg):
-
-        ts = msg['ts']
-        symbol = msg['symbol']
-        px = msg['price']
-
-        # first append trade to trades table
-        data = {'symbol': symbol, 'px': px}
-        self.trades = self.trades.append(pd.DataFrame(data, index=[ts]))
-
-        # second check if any signal is triggered
-        signal = self.check_for_triggered_signal(symbol, ts, px)
-        if signal:
-           self.log.order(signal)
-
-    def handle_tick_price(self, msg):
-        """
-        field semantics: 1 = bid px, 2 = ask px, 4 = last px,
-                         6 = high px, 7 = low px, 9 = close px
-        """
-        if msg['field'] == 1:
-            self.bbos[msg['symbol']]['bid'] = msg['price']
-        elif msg['field'] == 2:
-            self.bbos[msg['symbol']]['ask'] = msg['price']
-        elif msg['field'] == 4:
-            self.handle_trade(msg)
-
-    def handle_tick_size(self, msg):
-        """
-        field semantics: 0 = bid sz, 3 = ask sz, 5 = last sz,
-                         8 = volume for the day
-        """
-        pass
-
     def run(self):
         while True:
             msg = self.msgs.get()
             if msg['type'] == 'tickPrice':
                 self.log.data(msg)
-                self.handle_tick_price(msg)
+                signal = self.strategy.handle_tick_price(msg)
             elif msg['type'] == 'tickSize':
                 self.log.data(msg)
-                self.handle_tick_size(msg)
+                signal = self.strategy.handle_tick_size(msg)
             else:
                 self.log.misc(msg)
 
+            if signal:
+                self.log.order(signal)
+
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description="recoil trading bot")
+    parser = argparse.ArgumentParser(description='recoil trading bot')
     parser.add_argument('--config', type=argparse.FileType('r'))
     parser.add_argument('--replay-file')
     args = parser.parse_args()
@@ -174,7 +96,7 @@ if __name__ == '__main__':
     config['instruments'] = {i:c for i, c in enumerate(config['instruments'])}
     config['replay_file'] = args.replay_file
     log = Logger('replay' if args.replay_file else 'log')
-    log.operation({"config": config})
+    log.operation({'config': config})
 
     config['logger'] = log
     bot = RecoilBot(**config)
