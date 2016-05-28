@@ -38,10 +38,10 @@ class Logger(object):
     def __init__(self, mode):
         if mode in ['log', 'scanner']:
             datestr = datetime.utcnow().strftime('%Y%m%d')
-        elif mode == 'replay':
+        elif mode == 'backtest':
             datestr = datetime.utcnow().strftime('%Y%m%d.%H%M%S')
         else:
-            print('ERROR unknown mode')
+            print('ERROR unknown logger mode')
             raise Exception
         file_ = '{}.{}.jsonl'.format(mode, datestr)
         self.fh = open(file_, 'a')
@@ -56,7 +56,7 @@ class Logger(object):
             timestamp = ts()
         log = template.format(timestamp, type_, json.dumps(msg))
         self.fh.write(log)
-        print(log)
+        print(log, end='')
 
     def operation(self, msg):
         self.__log__('OPERATION', msg)
