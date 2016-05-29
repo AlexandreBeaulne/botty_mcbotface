@@ -19,7 +19,9 @@
 * ~~carve out signal module and move to github~~
 * ~~build user-friendly backtesting module~~
 * ~~optimize backtesting module~~
-* create decision tree for signals and and max spread condition
+* ~~add max spread condition~~
+* add moving average and parabolic curve fit strategies
+* perform grid search on parameters for optimization
 * develop a market scanner to dynamically scan for instruments to watch
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 
