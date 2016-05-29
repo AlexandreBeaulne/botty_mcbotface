@@ -106,7 +106,7 @@ def build_graph(signal, params, bbos, trds):
     trds = trds.sz.groupby(pd.TimeGrouper('{}s'.format(bin_sz))).sum()
     xs = [unix_ts(ts) for ts in trds.index]
     ax2.bar(xs, trds, width=bin_sz)
-    ax2.set_ylabel('volume')
+    ax2.set_ylabel('volume (lots)')
     x1, x2, y1, y2 = plt.axis()
     plt.axis((x1, x2, y1, 10 * y2))
 
@@ -186,10 +186,13 @@ def outcomes_graphs(direction, outcomes):
     df = df.set_index('t', append=True).unstack()
     df.columns = df.columns.droplevel()
     df.plot.box()
+    avgs = df.mean()
+    plt.plot(avgs.index // 5, avgs.values, label='avg', marker='H', color='k', linestyle='')
     plt.xlabel('time after signal (s)')
     plt.ylabel('return (%)')
     title = '{} calls - distribution of price movements post-signal'
     plt.title(title.format(direction))
+    plt.legend(loc=0)
     plt.tight_layout()
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
