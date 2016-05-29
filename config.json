@@ -3,7 +3,7 @@
     "host": "54.197.15.42",
     "port": 7496,
 
-    "watch_threshold": 0.03,
+    "watch_threshold": 0.05,
     "watch_duration": 30,
     "slowdown_threshold": 0.002,
     "slowdown_duration": 3,
