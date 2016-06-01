@@ -183,21 +183,22 @@ def compute_outcome(signal, trds):
 
 def outcomes_graphs(direction, outcomes):
     df = outcomes[outcomes['direction'] == direction][['return', 't']]
-    df = df.set_index('t', append=True).unstack()
-    df.columns = df.columns.droplevel()
-    df.plot.box()
-    avgs = df.mean()
-    plt.plot(avgs.index // 5, avgs.values, label='avg', marker='H', color='k', linestyle='')
-    plt.xlabel('time after signal (s)')
-    plt.ylabel('return (%)')
-    title = '{} calls - distribution of price movements post-signal'
-    plt.title(title.format(direction))
-    plt.legend(loc=0)
-    plt.tight_layout()
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    plt.close()
-    return base64.b64encode(buf.getvalue()).decode('ascii')
+    if not df.empty:
+        df = df.set_index('t', append=True).unstack()
+        df.columns = df.columns.droplevel()
+        df.plot.box()
+        avgs = df.mean()
+        plt.plot(avgs.index // 5, avgs.values, label='avg', marker='H', color='k', linestyle='')
+        plt.xlabel('time after signal (s)')
+        plt.ylabel('return (%)')
+        title = '{} calls - distribution of price movements post-signal'
+        plt.title(title.format(direction))
+        plt.legend(loc=0)
+        plt.tight_layout()
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close()
+        return base64.b64encode(buf.getvalue()).decode('ascii')
 
 def rebuild_index():
 
