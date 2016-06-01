@@ -65,6 +65,7 @@ class Bot(object):
                 signal = self.strategy.handle_tick_size(msg)
             else:
                 self.log.misc(msg)
+                signal = None
 
             if signal:
                 self.log.order(signal)
