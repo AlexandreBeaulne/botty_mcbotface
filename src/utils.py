@@ -45,13 +45,7 @@ class NumpyEncoder(json.JSONEncoder):
 class Logger(object):
 
     def __init__(self, mode):
-        if mode in ['log', 'scanner']:
-            datestr = datetime.utcnow().strftime('%Y%m%d')
-        elif mode == 'backtest':
-            datestr = datetime.utcnow().strftime('%Y%m%d.%H%M%S')
-        else:
-            print('ERROR unknown logger mode')
-            raise Exception
+        datestr = datetime.utcnow().strftime('%Y%m%d')
         file_ = '{}.{}.jsonl'.format(mode, datestr)
         self.fh = open(file_, 'a')
 
