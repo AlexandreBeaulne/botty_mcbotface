@@ -18,7 +18,7 @@
         {"symbol": "AQMS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AVXS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AAVL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "BABA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "BWEN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BSI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BIOC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BOSC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
