@@ -77,7 +77,7 @@ if __name__ == '__main__':
     bbos = [bbo for inst in instruments.values() for bbo in inst.bbos]
     bbos = pd.DataFrame.from_dict(bbos)
     trds = [trd for inst in instruments.values() for trd in inst.trds]
-    trds = pd.DataFrame.from_dict(trds).sort_values('ts')
+    trds = pd.DataFrame.from_dict(trds)
 
     bbos_df = pd.read_csv('logs/bbos.csv.gz')
     trds_df = pd.read_csv('logs/trds.csv.gz')
