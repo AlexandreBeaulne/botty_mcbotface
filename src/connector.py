@@ -146,7 +146,6 @@ class Connector(EWrapper):
                'contractDetails': contractDetails, 'distance': distance,
                'benchmark': benchmark, 'projection': projection,
                'legsStr': legsStr}
-        print(contractDetails.m_summary)
         self.msgs.put(msg)
 
     def accountDownloadEnd(self, accountName):
