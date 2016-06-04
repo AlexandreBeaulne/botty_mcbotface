@@ -34,7 +34,7 @@ def parse_log(params, file_handle):
             signal = dict()
             signal['symbol'] = log['msg']['symbol']
             signal['ts'] = parse_ts(log['ts'])
-            signal['px'] = log['msg']['current_px']
+            signal['current_px'] = log['msg']['current_px']
             signal['direction'] = log['msg']['direction']
             signal['watch_ts'] = parse_ts(log['msg']['watch_ts'])
             signal['watch_px'] = log['msg']['watch_px']
@@ -165,26 +165,26 @@ def normalized_graphs(signals):
 
     return long_graph_figure, short_graph_figure
 
-def compute_outcome(signal, trds):
+def compute_outcomes(signal, trds, exit_timeouts):
     sym = signal['symbol']
     t0 = signal['ts']
-    px0 = signal['px']
+    px0 = signal['current_px']
     dir = signal['direction']
     mult = {'long': 100, 'short': -100}[dir]
     outcomes = []
     df = trds[trds['symbol'] == sym]
-    for delay in range(5, 65, 5):
-        t = df.index.asof(t0 + np.timedelta64(delay, 's'))
+    for exit_timeout in exit_timeouts:
+        t = df.index.asof(t0 + np.timedelta64(exit_timeout, 's'))
         px = df.loc[t]['px']
         return_ = mult * (px / px0 - 1)
-        outcome = {'direction': dir, 't': delay, 'return': return_}
+        outcome = {'direction': dir, 'timeout': exit_timeout, 'return': return_}
         outcomes.append(outcome)
     return outcomes
 
 def outcomes_graphs(direction, outcomes):
-    df = outcomes[outcomes['direction'] == direction][['return', 't']]
+    df = outcomes[outcomes['direction'] == direction][['return', 'timeout']]
     if not df.empty:
-        df = df.set_index('t', append=True).unstack()
+        df = df.set_index('timeout', append=True).unstack()
         df.columns = df.columns.droplevel()
         df.plot.box()
         avgs = df.mean()
@@ -220,14 +220,13 @@ if __name__ == '__main__':
     params, signals = parse_logs(args.logs)
 
     bbos = pd.read_csv('logs/bbos.csv.gz', parse_dates=['ts'])
-    trds = pd.read_csv('logs/trds.csv.gz', parse_dates=['ts'])
-    trds = trds.set_index('ts')
+    trds = pd.read_csv('logs/trds.csv.gz', parse_dates=['ts']).set_index('ts')
 
     data = dict()
     data['figures'] = [build_graph(s, params, bbos, trds) for s in signals]
     normalized = [normalize_signal(s, params, trds) for s in signals]
     data['longs'], data['shorts'] = normalized_graphs(normalized)
-    outcomes = [compute_outcome(s, trds) for s in signals]
+    outcomes = [compute_outcomes(s, trds, range(5, 65, 5)) for s in signals]
     outcomes = pd.DataFrame.from_dict([x for xs in outcomes for x in xs])
     data['longs_distn'] = outcomes_graphs('long', outcomes)
     data['shorts_distn'] = outcomes_graphs('short', outcomes)
