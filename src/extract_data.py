@@ -8,60 +8,55 @@ class Instrument(object):
 
     def __init__(self):
 
-        self.bid = {'ts': None, 'px': None, 'sz': 0}
-        self.ask = {'ts': None, 'px': None, 'sz': 0}
-        self.trd = None
+        self.bbo = {'ts': None, 'symbol': None, 'bid_px': None, 'bid_sz': 0,
+                    'ask_px': None, 'ask_sz': 0}
+        self.trd_px = None
         self.bbos = []
         self.trds = []
-
-    def __bbo__(self, symbol):
-        return {'ts': self.bid['ts'], 'symbol': symbol,
-                'bid_px': self.bid['px'], 'bid_sz': self.bid['sz'],
-                'ask_px': self.ask['px'], 'ask_sz': self.ask['sz']}
 
     def add_tick(self, tick):
 
         msg = tick['msg']
 
         if msg['field'] == 0 and msg['type'] == 'tickSize': # bid sz
-            if self.bid['sz'] == 0:
-                self.bid['sz'] = msg['size']
-            elif msg['size'] != self.bid['sz']:
-                self.bbos.append(self.__bbo__(msg['symbol']))
-                self.bid = {'ts': tick['ts'], 'px': self.bid['px'], 'sz': msg['size']}
+            if msg['size'] != self.bbo['bid_sz']:
+                self.bbo['symbol'] = msg['symbol']
+                self.bbo['ts'] = tick['ts']
+                self.bbo['bid_sz'] = msg['size']
+                if self.bbo['bid_px']:
+                    self.bbos.append(self.bbo.copy())
 
         elif msg['field'] == 1 and msg['type'] == 'tickPrice': # bid px
-            if not self.bid['px']:
-                self.bid['ts'] = tick['ts']
-                self.bid['px'] = msg['price']
-            elif self.bid['px'] != msg['price']:
-                if self.bid['ts'] and self.bid['px'] and self.bid['sz']:
-                    self.bbos.append(self.__bbo__(msg['symbol']))
-                self.bid = {'ts': tick['ts'], 'px': msg['price'], 'sz': 0}
+            if msg['price'] != self.bbo['bid_px']:
+                self.bbo['symbol'] = msg['symbol']
+                self.bbo['ts'] = tick['ts']
+                self.bbo['bid_px'] = msg['price']
+                if self.bbo['bid_sz']:
+                    self.bbos.append(self.bbo.copy())
 
         elif msg['field'] == 2 and msg['type'] == 'tickPrice': # ask px
-            if not self.ask['px']:
-                self.ask['ts'] = tick['ts']
-                self.ask['px'] = msg['price']
-            elif self.ask['px'] != msg['price']:
-                if self.ask['ts'] and self.ask['px'] and self.ask['sz']:
-                    self.bbos.append(self.__bbo__(msg['symbol']))
-                self.ask = {'ts': tick['ts'], 'px': msg['price'], 'sz': 0}
+            if msg['price'] != self.bbo['ask_px']:
+                self.bbo['symbol'] = msg['symbol']
+                self.bbo['ts'] = tick['ts']
+                self.bbo['ask_px'] = msg['price']
+                if self.bbo['ask_sz']:
+                    self.bbos.append(self.bbo.copy())
 
         elif msg['field'] == 3 and msg['type'] == 'tickSize': # ask sz
-            if self.ask['sz'] == 0:
-                self.ask['sz'] = msg['size']
-            elif msg['size'] != self.ask['sz']:
-                self.bbos.append(self.__bbo__(msg['symbol']))
-                self.ask = {'ts': tick['ts'], 'px': self.ask['px'], 'sz': msg['size']}
+            if msg['size'] != self.bbo['ask_sz']:
+                self.bbo['symbol'] = msg['symbol']
+                self.bbo['ts'] = tick['ts']
+                self.bbo['ask_sz'] = msg['size']
+                if self.bbo['ask_px']:
+                    self.bbos.append(self.bbo.copy())
 
         elif msg['field'] == 4 and msg['type'] == 'tickPrice': # trd px
-            self.trd = msg['price']
+            self.trd_px = msg['price']
 
         elif msg['field'] == 5 and msg['type'] == 'tickSize': # trd sz
-            if self.trd:
+            if self.trd_px:
                 self.trds.append({'ts': tick['ts'], 'symbol': msg['symbol'],
-                                  'px': self.trd, 'sz': msg['size']})
+                                  'px': self.trd_px, 'sz': msg['size']})
 
 if __name__ == '__main__':
 
@@ -71,22 +66,22 @@ if __name__ == '__main__':
         log = json.loads(line)
         instruments[log['msg']['symbol']].add_tick(log)
 
-#    bbos = [bbo for inst in instruments.values() for bbo in inst.bbos]
-#    bbos = pd.DataFrame.from_dict(bbos)
-#    trds = [trd for inst in instruments.values() for trd in inst.trds]
-#    trds = pd.DataFrame.from_dict(trds)
-#
-#    bbos_df = pd.read_csv('logs/bbos.csv.gz')
-#    trds_df = pd.read_csv('logs/trds.csv.gz')
-#
-#    bbos_df = pd.concat([bbos_df, bbos]).sort_values('ts')
-#    trds_df = pd.concat([trds_df, trds]).sort_values('ts')
-#
-#    cols = ['ts', 'symbol', 'bid_sz', 'bid_px', 'ask_px', 'ask_sz']
-#    bbos_df.to_csv('logs/bbos.csv.gz', compression='gzip',
-#                   index=False, columns=cols)
-#
-#    cols = ['ts', 'symbol', 'px', 'sz']
-#    trds_df.to_csv('logs/trds.csv.gz', compression='gzip',
-#                   index=False, columns=cols)
+    bbos = [bbo for inst in instruments.values() for bbo in inst.bbos]
+    bbos = pd.DataFrame.from_dict(bbos)
+    trds = [trd for inst in instruments.values() for trd in inst.trds]
+    trds = pd.DataFrame.from_dict(trds)
+
+    bbos_df = pd.read_csv('logs/bbos.csv.gz')
+    trds_df = pd.read_csv('logs/trds.csv.gz')
+
+    bbos_df = pd.concat([bbos_df, bbos]).sort_values('ts')
+    trds_df = pd.concat([trds_df, trds]).sort_values('ts')
+
+    cols = ['ts', 'symbol', 'bid_sz', 'bid_px', 'ask_px', 'ask_sz']
+    bbos_df.to_csv('logs/bbos.csv.gz', compression='gzip',
+                   index=False, columns=cols)
+
+    cols = ['ts', 'symbol', 'px', 'sz']
+    trds_df.to_csv('logs/trds.csv.gz', compression='gzip',
+                   index=False, columns=cols)
 
