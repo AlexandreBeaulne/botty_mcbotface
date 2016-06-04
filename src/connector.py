@@ -3,10 +3,10 @@ from utils import now
 
 from ib.ext.EWrapper import EWrapper
 
-class Wrapper(EWrapper):
+class Connector(EWrapper):
 
     def __init__(self, inst_map, msgs):
-        super(Wrapper, self).__init__()
+        super(Connector, self).__init__()
         self.msgs = msgs
         self.inst_map = inst_map
 

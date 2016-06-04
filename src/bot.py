@@ -8,7 +8,7 @@ import argparse
 import queue
 import numpy as np
 
-from wrapper import Wrapper
+from connector import Connector
 from utils import Logger
 
 from ib.ext.Contract import Contract
@@ -31,7 +31,7 @@ class Bot(object):
         # operations
         self.host = host
         self.port = port
-        self.connection = EClientSocket(Wrapper(self.instruments, self.msgs))
+        self.connection = EClientSocket(Connector(self.instruments, self.msgs))
         self.log = logger
 
     def connect(self):
