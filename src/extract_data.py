@@ -4,10 +4,6 @@ import json
 import pandas as pd
 from collections import defaultdict
 
-def bbo(ts, symbol, bid, ask):
-    return {'ts': ts, 'symbol': symbol, 'bid_px': bid['px'],
-            'bid_sz': bid['sz'], 'ask_px': ask['px'], 'ask_sz': ask['sz']}
-
 class Instrument(object):
 
     def __init__(self):
@@ -18,6 +14,11 @@ class Instrument(object):
         self.bbos = []
         self.trds = []
 
+    def __bbo__(self, symbol):
+        return {'ts': self.bid['ts'], 'symbol': symbol,
+                'bid_px': self.bid['px'], 'bid_sz': self.bid['sz'],
+                'ask_px': self.ask['px'], 'ask_sz': self.ask['sz']}
+
     def add_tick(self, tick):
 
         msg = tick['msg']
@@ -26,8 +27,7 @@ class Instrument(object):
             if self.bid['sz'] == 0:
                 self.bid['sz'] = msg['size']
             elif msg['size'] != self.bid['sz']:
-                self.bbos.append(bbo(self.bid['ts'], msg['symbol'], 
-                                     self.bid, self.ask))
+                self.bbos.append(self.__bbo__(msg['symbol']))
                 self.bid = {'ts': tick['ts'], 'px': self.bid['px'], 'sz': msg['size']}
 
         elif msg['field'] == 1 and msg['type'] == 'tickPrice': # bid px
@@ -36,8 +36,7 @@ class Instrument(object):
                 self.bid['px'] = msg['price']
             elif self.bid['px'] != msg['price']:
                 if self.bid['ts'] and self.bid['px'] and self.bid['sz']:
-                    self.bbos.append(bbo(self.bid['ts'], msg['symbol'], 
-                                         self.bid, self.ask))
+                    self.bbos.append(self.__bbo__(msg['symbol']))
                 self.bid = {'ts': tick['ts'], 'px': msg['price'], 'sz': 0}
 
         elif msg['field'] == 2 and msg['type'] == 'tickPrice': # ask px
@@ -46,16 +45,14 @@ class Instrument(object):
                 self.ask['px'] = msg['price']
             elif self.ask['px'] != msg['price']:
                 if self.ask['ts'] and self.ask['px'] and self.ask['sz']:
-                    self.bbos.append(bbo(self.ask['ts'], msg['symbol'],
-                                         self.bid, self.ask))
+                    self.bbos.append(self.__bbo__(msg['symbol']))
                 self.ask = {'ts': tick['ts'], 'px': msg['price'], 'sz': 0}
 
         elif msg['field'] == 3 and msg['type'] == 'tickSize': # ask sz
             if self.ask['sz'] == 0:
                 self.ask['sz'] = msg['size']
             elif msg['size'] != self.ask['sz']:
-                self.bbos.append(bbo(self.ask['ts'], msg['symbol'],
-                                     self.bid, self.ask))
+                self.bbos.append(self.__bbo__(msg['symbol']))
                 self.ask = {'ts': tick['ts'], 'px': self.ask['px'], 'sz': msg['size']}
 
         elif msg['field'] == 4 and msg['type'] == 'tickPrice': # trd px
@@ -74,22 +71,22 @@ if __name__ == '__main__':
         log = json.loads(line)
         instruments[log['msg']['symbol']].add_tick(log)
 
-    bbos = [bbo for inst in instruments.values() for bbo in inst.bbos]
-    bbos = pd.DataFrame.from_dict(bbos)
-    trds = [trd for inst in instruments.values() for trd in inst.trds]
-    trds = pd.DataFrame.from_dict(trds)
-
-    bbos_df = pd.read_csv('logs/bbos.csv.gz')
-    trds_df = pd.read_csv('logs/trds.csv.gz')
-
-    bbos_df = pd.concat([bbos_df, bbos]).sort_values('ts')
-    trds_df = pd.concat([trds_df, trds]).sort_values('ts')
-
-    cols = ['ts', 'symbol', 'bid_sz', 'bid_px', 'ask_px', 'ask_sz']
-    bbos_df.to_csv('logs/bbos.csv.gz', compression='gzip',
-                   index=False, columns=cols)
-
-    cols = ['ts', 'symbol', 'px', 'sz']
-    trds_df.to_csv('logs/trds.csv.gz', compression='gzip',
-                   index=False, columns=cols)
+#    bbos = [bbo for inst in instruments.values() for bbo in inst.bbos]
+#    bbos = pd.DataFrame.from_dict(bbos)
+#    trds = [trd for inst in instruments.values() for trd in inst.trds]
+#    trds = pd.DataFrame.from_dict(trds)
+#
+#    bbos_df = pd.read_csv('logs/bbos.csv.gz')
+#    trds_df = pd.read_csv('logs/trds.csv.gz')
+#
+#    bbos_df = pd.concat([bbos_df, bbos]).sort_values('ts')
+#    trds_df = pd.concat([trds_df, trds]).sort_values('ts')
+#
+#    cols = ['ts', 'symbol', 'bid_sz', 'bid_px', 'ask_px', 'ask_sz']
+#    bbos_df.to_csv('logs/bbos.csv.gz', compression='gzip',
+#                   index=False, columns=cols)
+#
+#    cols = ['ts', 'symbol', 'px', 'sz']
+#    trds_df.to_csv('logs/trds.csv.gz', compression='gzip',
+#                   index=False, columns=cols)
 
