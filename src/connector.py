@@ -16,8 +16,8 @@ class Connector(EWrapper):
         self.msgs.put(msg)
 
     def tickSize(self, tickerId, field, sz):
-        msg = {'type': 'tickSize', 'symbol': self.inst_map[tickerId]['symbol'], 'field': field,
-               'size': sz, 'ts': now()}
+        msg = {'type': 'tickSize', 'symbol': self.inst_map[tickerId]['symbol'],
+               'field': field, 'size': sz, 'ts': now()}
         self.msgs.put(msg)
 
     def tickOptionComputation(self, tickerId, field, impliedVol, delta,
