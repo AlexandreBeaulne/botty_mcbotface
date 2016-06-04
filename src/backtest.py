@@ -10,32 +10,19 @@ from strategy import Strategy
 from utils import Logger
 
 def process_trd(line):
-    ts, symbol, px, sz = line.split(',')
-    return {'ts': np.datetime64(ts), 'symbol': symbol,
+    ts, symbol, sz, px = line.split(',')
+    return {'type': 'trd', 'ts': np.datetime64(ts), 'symbol': symbol,
             'px': float(px), 'sz': int(float(sz))}
-
-def repackage_trd(trd):
-    return {'type': 'tickPrice', 'symbol': trd['symbol'], 'field': 4,
-            'price': trd['px'], 'ts': trd['ts']}
 
 def process_bbo(line):
     ts, symbol, bid_sz, bid_px, ask_px, ask_sz = line.split(',')
-    return {'ts': np.datetime64(ts), 'symbol': symbol,
+    bid_px = float(bid_px) if bid_px else np.nan
+    ask_px = float(ask_px) if ask_px else np.nan
+    return {'type': 'bbo', 'ts': np.datetime64(ts), 'symbol': symbol,
             'bid_sz': int(float(bid_sz)), 'bid_px': float(bid_px),
             'ask_px': float(ask_px), 'ask_sz': int(float(ask_sz))}
 
-def repackage_bid(bbo):
-    return {'type': 'tickPrice', 'symbol': bbo['symbol'], 'field': 1,
-            'price': bbo['bid_px'], 'ts': bbo['ts']}
-
-def repackage_ask(bbo):
-    return {'type': 'tickPrice', 'symbol': bbo['symbol'], 'field': 2,
-            'price': bbo['ask_px'], 'ts': bbo['ts']}
-
 def backtest(strategy, bbos, trds):
-
-    current_trd = {'px': np.nan}
-    current_bbo = {'bid_px': np.nan, 'ask_px': np.nan}
 
     end_of_time = np.datetime64('3000-01-01T00:00:00.000000')
 
@@ -45,21 +32,15 @@ def backtest(strategy, bbos, trds):
         next_trd = trds[0] if trds else {'ts': end_of_time}
 
         if next_trd['ts'] < next_bbo['ts']:
-            if next_trd['px'] != current_trd['px']:
-                signal = strategy.handle_tick_price(repackage_trd(next_trd))
-                if signal:
-                    yield signal
-            current_trd = trds.popleft()
+            signal = strategy.handle_tick(next_trd)
+            if signal:
+                yield signal
+            trds.popleft()
         else:
-            if next_bbo['bid_px'] != current_bbo['bid_px']:
-                signal = strategy.handle_tick_price(repackage_bid(next_bbo))
-                if signal:
-                    log.order(signal)
-            if next_bbo['ask_px'] != current_bbo['ask_px']:
-                signal = strategy.handle_tick_price(repackage_ask(next_bbo))
-                if signal:
-                    yield signal
-            current_bbo = bbos.popleft()
+            signal = strategy.handle_tick(next_bbo)
+            if signal:
+                yield signal
+            bbos.popleft()
 
 if __name__ == '__main__':
 

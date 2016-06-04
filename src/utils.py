@@ -67,6 +67,9 @@ class Logger(object):
     def data(self, msg):
         self.__log__('DATA', msg)
 
+    def raw(self, msg):
+        self.__log__('RAW', msg)
+
     def order(self, msg):
         self.__log__('ORDER', msg)
 

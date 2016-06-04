@@ -9,6 +9,7 @@ import queue
 import numpy as np
 
 from connector import Connector
+from bookbuilder import BookBuilder
 from utils import Logger
 
 from ib.ext.Contract import Contract
@@ -22,11 +23,12 @@ class Bot(object):
                  slowdown_threshold, slowdown_duration, logger):
 
         self.msgs = queue.Queue()
+        self.book_builder = BookBuilder()
 
         # strategy
         self.instruments = instruments
         self.strategy = Strategy(watch_threshold, watch_duration,
-                slowdown_threshold, slowdown_duration)
+                                 slowdown_threshold, slowdown_duration)
 
         # operations
         self.host = host
@@ -57,18 +59,14 @@ class Bot(object):
     def run(self):
         while True:
             msg = self.msgs.get()
-            if msg['type'] == 'tickPrice':
-                self.log.data(msg)
-                signal = self.strategy.handle_tick_price(msg)
-            elif msg['type'] == 'tickSize':
-                self.log.data(msg)
-                signal = self.strategy.handle_tick_size(msg)
-            else:
-                self.log.misc(msg)
-                signal = None
+            self.log.raw(msg)
+            tick = self.book_builder.process_raw_tick(msg)
+            if tick:
+                self.log.data(tick)
+                signal = self.strategy.handle_tick(msg)
 
-            if signal:
-                self.log.order(signal)
+                if signal:
+                    self.log.order(signal)
 
 if __name__ == '__main__':
 
