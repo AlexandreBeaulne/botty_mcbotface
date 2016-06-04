@@ -49,7 +49,9 @@ if __name__ == '__main__':
 
     # loop over all possibilities
     combos = product(watch_thrshlds, watch_drtns, slowdown_thrshlds, slowdown_drtns)
-    for wt, wd, st, sd in random.shuffle(list(combos)):
+    combos = list(combos)
+    random.shuffle(combos)
+    for wt, wd, st, sd in combos:
         setup = {'type': 'backtest', 'watch_threshold': wt, 'watch_duration': wd,
                  'slowdown_threshold': st, 'slowdown_duration': sd}
         log.operation(setup)
