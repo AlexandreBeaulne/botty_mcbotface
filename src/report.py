@@ -63,7 +63,7 @@ def build_graph(signal, params, bbos, trds):
     watch_px = signal['watch_px']
     slowdown_ts = unix_ts(signal['slowdown_ts'])
     slowdown_px = signal['slowdown_px']
-    px = signal['px']
+    px = signal['current_px']
     direction = signal['direction']
     watch_duration = params['watch_duration']
 
@@ -122,7 +122,7 @@ def normalize_signal(signal, params, trds):
     # extract vars for the graphs
     ts = signal['ts']
     symbol = signal['symbol']
-    px = signal['px']
+    px = signal['current_px']
     direction = signal['direction']
     watch_duration = params['watch_duration']
 
