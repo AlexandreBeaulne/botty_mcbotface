@@ -226,7 +226,7 @@ if __name__ == '__main__':
     data['figures'] = [build_graph(s, params, bbos, trds) for s in signals]
     normalized = [normalize_signal(s, params, trds) for s in signals]
     data['longs'], data['shorts'] = normalized_graphs(normalized)
-    outcomes = [compute_outcomes(s, trds, range(5, 65, 5)) for s in signals]
+    outcomes = [compute_outcomes(s, trds, range(5, 180, 5)) for s in signals]
     outcomes = pd.DataFrame.from_dict([x for xs in outcomes for x in xs])
     data['longs_distn'] = outcomes_graphs('long', outcomes)
     data['shorts_distn'] = outcomes_graphs('short', outcomes)

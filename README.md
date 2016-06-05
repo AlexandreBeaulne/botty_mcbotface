@@ -20,8 +20,11 @@
 * ~~build user-friendly backtesting module~~
 * ~~optimize backtesting module~~
 * ~~add max spread condition~~
-* perform grid search on parameters for optimization
-* add moving average and parabolic curve fit strategies
+* ~~perform grid search on parameters for optimization~~
+* carve off and abstract strategies to be plug-and-play
+* add minimum price rules to current strat
+* add 'since' (instead of 'as-of'), moving average and parabolic curve fit strategies
+* optimize gridsearch
 * develop a market scanner to dynamically scan for instruments to watch
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 
