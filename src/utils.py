@@ -52,9 +52,8 @@ class Logger(object):
     def __log__(self, type_, msg):
         msg = copy.deepcopy(msg)
         template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
-        if 'ts' in msg:
+        if isinstance(msg, dict) and 'ts' in msg:
             timestamp = msg['ts'].tolist().isoformat()
-            del msg['ts']
         else:
             timestamp = ts()
         log = template.format(timestamp, type_, json.dumps(msg, cls=NumpyEncoder))

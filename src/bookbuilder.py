@@ -21,7 +21,7 @@ class BookBuilder():
         if msg['field'] == 0 and msg['type'] == 'tickSize': # bid sz
             if msg['size'] != bbo['bid_sz']:
                 bbo['symbol'] = msg['symbol']
-                bbo['ts'] = tick['ts']
+                bbo['ts'] = msg['ts']
                 bbo['bid_sz'] = msg['size']
                 if bbo['bid_px']:
                     return bbo.copy()
@@ -29,7 +29,7 @@ class BookBuilder():
         elif msg['field'] == 1 and msg['type'] == 'tickPrice': # bid px
             if msg['price'] != bbo['bid_px']:
                 bbo['symbol'] = msg['symbol']
-                bbo['ts'] = tick['ts']
+                bbo['ts'] = msg['ts']
                 bbo['bid_px'] = msg['price']
                 if bbo['bid_sz']:
                     return bbo.copy()
@@ -37,7 +37,7 @@ class BookBuilder():
         elif msg['field'] == 2 and msg['type'] == 'tickPrice': # ask px
             if msg['price'] != bbo['ask_px']:
                 bbo['symbol'] = msg['symbol']
-                bbo['ts'] = tick['ts']
+                bbo['ts'] = msg['ts']
                 bbo['ask_px'] = msg['price']
                 if bbo['ask_sz']:
                     return bbo.copy()
@@ -45,19 +45,19 @@ class BookBuilder():
         elif msg['field'] == 3 and msg['type'] == 'tickSize': # ask sz
             if msg['size'] != bbo['ask_sz']:
                 bbo['symbol'] = msg['symbol']
-                bbo['ts'] = tick['ts']
+                bbo['ts'] = msg['ts']
                 bbo['ask_sz'] = msg['size']
                 if bbo['ask_px']:
                     return bbo.copy()
 
         elif msg['field'] == 4 and msg['type'] == 'tickPrice': # trd px
             trd['symbol'] = msg['symbol']
-            trd['ts'] = tick['ts']
+            trd['ts'] = msg['ts']
             trd['px'] = msg['price']
 
         elif msg['field'] == 5 and msg['type'] == 'tickSize': # trd sz
             trd['symbol'] = msg['symbol']
-            trd['ts'] = tick['ts']
+            trd['ts'] = msg['ts']
             trd['sz'] = msg['size']
             if trd['px']:
                 return trd.copy()

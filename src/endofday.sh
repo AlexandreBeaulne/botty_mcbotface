@@ -12,7 +12,7 @@ echo "extracting data"
 grep DATA $LOG | python src/extract_data.py
 
 echo "back up market data to AWS S3"
-aws s3 cp $HOME/botty_mcbotface/logs s3://ltcm
+aws s3 cp $HOME/botty_mcbotface/logs s3://ltcm --recursive
 
 echo "generate report"
 python src/report.py --logs $HOME/botty_mcbotface/logs/$LOG.gz

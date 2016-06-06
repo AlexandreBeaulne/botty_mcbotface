@@ -35,11 +35,13 @@ http://www.theguardian.com/environment/2016/apr/17/boaty-mcboatface-wins-poll-to
 * ~~build user-friendly backtesting module~~
 * ~~optimize backtesting module~~
 * ~~add max spread condition~~
-* ~~perform grid search on parameters for optimization~~
+* sort out issue with live vs backtest
 * carve off and abstract strategies to be plug-and-play
 * add minimum price rules to current strat
 * add 'since' (instead of 'as-of'), moving average and parabolic curve fit strategies
-* optimize gridsearch
+* optimize gridsearch (run time wise)
+* perform grid search on parameters for strategy optimization
+* run automatically without intervention
 * develop a market scanner to dynamically scan for instruments to watch
 * Move from IB TWS to IB Gateway
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
