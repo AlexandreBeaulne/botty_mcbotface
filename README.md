@@ -1,4 +1,19 @@
 
+## PREREQS
+
+* vim
+* tmux: `sudo yum install tmux`
+* .vimrc and .tmuxconf: https://bitbucket.org/AlexandreBeaulne/dev.git
+* git: `sudo yum install git`
+* Anaconda python 3: https://www.continuum.io/downloads
+* IBPy: https://github.com/blampe/IbPy
+* awscli: `sudo pip install awscli`
+* Botty Mcbotface: https://github.com/AlexandreBeaulne/botty_mcbotface.git
+
+## Origin of name
+
+http://www.theguardian.com/environment/2016/apr/17/boaty-mcboatface-wins-poll-to-name-polar-research-vessel
+
 ## TODO
 * ~~setup connection with IB's TWS~~
 * ~~handle inbound market data~~
@@ -26,5 +41,6 @@
 * add 'since' (instead of 'as-of'), moving average and parabolic curve fit strategies
 * optimize gridsearch
 * develop a market scanner to dynamically scan for instruments to watch
+* Move from IB TWS to IB Gateway
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 
