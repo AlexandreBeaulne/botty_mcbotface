@@ -21,7 +21,7 @@
 * ~~optimize backtesting module~~
 * ~~add max spread condition~~
 * ~~sort out issue with live vs backtest~~
-* add minimum price rules to recoil strat
+* ~~add minimum price rules to recoil strat~~
 * optimize gridsearch (run-time wise)
 * perform grid search on parameters for strategy optimization
 * carve off and abstract strategies to be plug-and-play
