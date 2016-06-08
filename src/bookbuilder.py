@@ -12,9 +12,11 @@ class BookBuilder():
         self.bbos = defaultdict(empty_bbo)
         self.trds = defaultdict(empty_trd)
 
-    def process_raw_tick(self, tick):
+    def process_raw_tick(self, msg):
 
-        msg = tick['msg']
+        if 'symbol' not in msg or 'field' not in msg:
+            return None
+
         bbo = self.bbos[msg['symbol']]
         trd = self.trds[msg['symbol']]
 

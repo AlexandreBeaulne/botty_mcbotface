@@ -8,11 +8,12 @@ from bookbuilder import BookBuilder
 if __name__ == '__main__':
 
     builder = BookBuilder()
-    ticks = [builder.process_raw_tick(json.loads(line)) for line in sys.stdin]
+    logs = (json.loads(line) for line in sys.stdin)
+    ticks = [builder.process_raw_tick(log['msg']) for log in logs]
     bbos = (tick for tick in ticks if tick and tick['type'] == 'bbo')
-    bbos = pd.DataFrame.from_dict(bbos).drop('type')
+    bbos = pd.DataFrame.from_dict(bbos).drop('type', axis=1)
     trds = (tick for tick in ticks if tick and tick['type'] == 'trd')
-    trds = pd.DataFrame.from_dict(trds).drop('type')
+    trds = pd.DataFrame.from_dict(trds).drop('type', axis=1)
 
     bbos_df = pd.read_csv('logs/bbos.csv.gz')
     trds_df = pd.read_csv('logs/trds.csv.gz')

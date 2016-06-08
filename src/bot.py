@@ -60,14 +60,14 @@ class Bot(object):
         while True:
             msg = self.msgs.get()
             self.log.raw(msg)
-            if msg['type'] in {'tickPrice', 'tickSize'}:
-                tick = self.book_builder.process_raw_tick({'msg': msg})
-                if tick:
-                    self.log.data(tick)
-                    signal = self.strategy.handle_tick(msg)
 
-                    if signal:
-                        self.log.order(signal)
+            tick = self.book_builder.process_raw_tick(msg)
+            if tick:
+                self.log.data(tick)
+                signal = self.strategy.handle_tick(msg)
+
+                if signal:
+                    self.log.order(signal)
 
 if __name__ == '__main__':
 
