@@ -15,4 +15,6 @@ git clone https://github.com/AlexandreBeaulne/botty_mcbotface.git
 # * .tmux.conf (https://bitbucket.org/AlexandreBeaulne/dev.git)
 # * $ aws configure
 # * $ gpg -d botty_mcbotface/src/strategy.py.gpg
+# * $ git config --global user.name "Alexandre Beaulne"
+# * $ git config --global user.email "alexandre.beaulne@gmail.com"
 

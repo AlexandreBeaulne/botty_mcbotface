@@ -5,7 +5,7 @@
 
     "watch_threshold": 0.05,
     "watch_duration": 45,
-    "slowdown_threshold": 0.001,
+    "slowdown_threshold": 0.002,
     "slowdown_duration": 2,
 
     "instruments": [
