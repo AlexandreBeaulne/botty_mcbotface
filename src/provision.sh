@@ -18,3 +18,5 @@ git clone https://github.com/AlexandreBeaulne/botty_mcbotface.git
 # * $ git config --global user.name "Alexandre Beaulne"
 # * $ git config --global user.email "alexandre.beaulne@gmail.com"
 
+# might be useful: http://serverfault.com/a/595256
+
