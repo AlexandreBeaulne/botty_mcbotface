@@ -45,6 +45,8 @@ def backtester(queue, bbos_csv, trds_csv):
             params = strategy.params()
             log.operation({'msg': 'backtest', 'params': params})
             signals = backtest.backtest(strategy, bbos.copy(), trds.copy())
+            if not signals:
+                continue
             results = []
             for signal in signals:
                 outcomes = compute_outcomes(signal, trds_df, exit_timeouts)
