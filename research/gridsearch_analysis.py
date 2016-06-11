@@ -19,7 +19,7 @@ if __name__ == '__main__':
     gby.min().to_csv('min.csv')
     gby.mean().to_csv('mean.csv')
     gby.max().to_csv('max.csv')
-    gby['return'].apply(np.std, columns='return').to_csv('std.csv')
+    gby.apply(np.std)['return'].to_csv('std.csv')
 
     # next present the results using full pandas feature set
 
@@ -42,5 +42,4 @@ if __name__ == '__main__':
     results = (df.loc[df['count'] > 36]
                  .sort_values('mean', ascending=False))
     results.to_csv('gridsearch_results.csv', index=False)
-    print(results.head(25))
 
