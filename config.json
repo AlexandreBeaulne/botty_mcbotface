@@ -3,10 +3,10 @@
     "host": "54.197.15.42",
     "port": 7496,
 
-    "watch_threshold": 0.05,
-    "watch_duration": 45,
-    "slowdown_threshold": 0.002,
-    "slowdown_duration": 2,
+    "watch_threshold": 0.075,
+    "watch_duration": 90,
+    "slowdown_threshold": 0.02,
+    "slowdown_duration": 20,
 
     "instruments": [
         {"symbol": "ASNA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
