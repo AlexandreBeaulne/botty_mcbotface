@@ -13,7 +13,27 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from math import floor, ceil
-from utils import unix_ts, parse_ts, pretty_ts, pretty_date, pretty_label
+
+def unix_ts(ts):
+    return pd.to_datetime(ts).timestamp()
+
+def parse_ts(ts):
+    # times are in UTC in logs
+    return np.datetime64(ts+'+0000')
+
+def pretty_ts(ts, offset=-4):
+    ts = pd.to_datetime(ts).tz_localize('UTC')
+    ts = ts.astimezone(timezone(timedelta(hours=offset)))
+    return ts.strftime('%A %B %d %Y, %H:%M:%S %Z')
+
+def pretty_date(ts, offset=-4):
+    ts = pd.to_datetime(ts).tz_localize('UTC')
+    ts = ts.astimezone(timezone(timedelta(hours=offset)))
+    return ts.strftime('%Y%m%d')
+
+def pretty_label(ts, offset=-4):
+    ts = datetime.fromtimestamp(ts).replace(tzinfo=timezone(timedelta()))
+    return ts.astimezone(timezone(timedelta(hours=offset))).strftime('%H:%M:%S')
 
 def parse_log(params, file_handle):
     signals = []
@@ -183,22 +203,24 @@ def compute_outcomes(signal, trds, exit_timeouts):
 
 def outcomes_graphs(direction, outcomes):
     df = outcomes[outcomes['direction'] == direction][['return', 'timeout']]
-    if not df.empty:
-        df = df.set_index('timeout', append=True).unstack()
-        df.columns = df.columns.droplevel()
-        df.plot.box()
-        avgs = df.mean()
-        plt.plot(avgs.index // 5, avgs.values, label='avg', marker='H', color='k', linestyle='')
-        plt.xlabel('time after signal (s)')
-        plt.ylabel('return (%)')
-        title = '{} calls - distribution of price movements post-signal'
-        plt.title(title.format(direction))
-        plt.legend(loc=0)
-        plt.tight_layout()
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        plt.close()
-        return base64.b64encode(buf.getvalue()).decode('ascii')
+    if df.empty:
+        return None
+    df = df.set_index('timeout', append=True).unstack()
+    df.columns = df.columns.droplevel()
+    df.plot.box()
+    avgs = df.mean()
+    plt.plot(avgs.index // 5, avgs.values, label='avg', marker='H',
+             color='k', linestyle='')
+    plt.xlabel('time after signal (s)')
+    plt.ylabel('return (%)')
+    title = '{} calls - distribution of price movements post-signal'
+    plt.title(title.format(direction))
+    plt.legend(loc=0)
+    plt.tight_layout()
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()
+    return base64.b64encode(buf.getvalue()).decode('ascii')
 
 def rebuild_index():
 
@@ -218,6 +240,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     params, signals = parse_logs(args.logs)
+
+    if not signals: #no signal to report, exit
+        sys.exit()
 
     bbos = pd.read_csv('logs/bbos.csv.gz', parse_dates=['ts'])
     trds = pd.read_csv('logs/trds.csv.gz', parse_dates=['ts']).set_index('ts')

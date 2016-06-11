@@ -3,7 +3,7 @@ import sys
 import json
 import pandas as pd
 
-from bookbuilder import BookBuilder
+from bot.bookbuilder import BookBuilder
 
 if __name__ == '__main__':
 

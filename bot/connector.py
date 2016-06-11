@@ -1,5 +1,5 @@
 
-from utils import now
+from bot.utils import now
 
 from ib.ext.EWrapper import EWrapper
 

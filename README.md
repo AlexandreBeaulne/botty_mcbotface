@@ -1,4 +1,33 @@
 
+## Rundown of executables
+
+### bot/bot.py: run the bot
+    $ python bot.bot --config config.json
+
+### research/endofday.sh: bash script to complete end of day tasks (backup, report, etc)
+    $ bash research/endofday.sh
+
+### research/tests.py: run some unit tests
+    $ python -m research.tests
+
+### research/extract_data.py: extract market data from log file and append it to CSVs
+    $ grep RAW logs/log.YYYYMMDD.jsonl | python -m research.extract_data
+
+### research/report.py: create a report from a set of log
+    $ python -m research.report --logs log.20180101.jsonl.gz log.20180102.jsonl.gz
+
+### research/backtest.py: backtest a single parameter set on history of data
+    $ python -m research.backtest --bbos logs/bbos.csv.gz --trds logs/trds.csv.gz --config config.json
+
+### research/gridsearch.py: runs a brute force on parameters space
+    $ python -m research.gridsearch --bbos logs/bbos.csv.gz --trds logs/trds.csv.gz
+
+### research/gridsearch_analysis.py: group gridsearch results by parameters set
+    $ python -m research.gridsearch_analysis
+
+### bot/provision.sh: sketch of a bash script to provision a server for bot
+    $ bash bot/provision.sh
+
 ## TODO
 * ~~setup connection with IB's TWS~~
 * ~~handle inbound market data~~
@@ -23,6 +52,8 @@
 * ~~sort out issue with live vs backtest~~
 * ~~add minimum price rules to recoil strat~~
 * ~~optimize gridsearch (run-time wise)~~
+* ~~split bot and research code~~
+* ~~ensure report works when no signal~~
 * perform grid search on parameters for strategy optimization
 * carve off and abstract strategies to be plug-and-play
 * add 'since' (instead of 'as-of'), moving average and parabolic curve fit strategies

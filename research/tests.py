@@ -2,10 +2,7 @@
 import unittest
 import numpy as np
 
-import backtest
-
-def fun(x):
-        return x + 1
+import research.backtest
 
 class BotTest(unittest.TestCase):
 

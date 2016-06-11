@@ -8,14 +8,13 @@ import argparse
 import queue
 import numpy as np
 
-from connector import Connector
-from bookbuilder import BookBuilder
-from utils import Logger
-
 from ib.ext.Contract import Contract
 from ib.ext.EClientSocket import EClientSocket
 
-from strategy import Strategy
+from bot.connector import Connector
+from bot.bookbuilder import BookBuilder
+from bot.utils import Logger
+from bot.strategy import Strategy
 
 class Bot(object):
 

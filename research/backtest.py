@@ -6,8 +6,8 @@ import gzip
 import collections
 import numpy as np
 
-from strategy import Strategy
-from utils import Logger
+from bot.strategy import Strategy
+from bot.utils import Logger
 
 def process_trd(line):
     ts, symbol, sz, px = line.split(',')

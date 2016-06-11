@@ -12,10 +12,10 @@ from multiprocessing import Process, Queue, cpu_count
 from itertools import product
 import pandas as pd
 
-import backtest
-from strategy import Strategy
-from utils import Logger
-from report import compute_outcomes
+from bot.strategy import Strategy
+from bot.utils import Logger
+from research.backtest import backtest, process_bbo, process_trd
+from research.report import compute_outcomes
 
 COLS = ['watch_threshold', 'watch_duration', 'slowdown_threshold',
         'slowdown_duration', 'direction', 'timeout', 'return']
@@ -31,11 +31,11 @@ def backtester(queue, bbos_csv, trds_csv):
 
     with io.TextIOWrapper(gzip.open(bbos_csv, 'r')) as fh:
         fh.readline() # skip header
-        bbos = collections.deque((backtest.process_bbo(line) for line in fh))
+        bbos = collections.deque((process_bbo(line) for line in fh))
 
     with io.TextIOWrapper(gzip.open(trds_csv, 'r')) as fh:
         fh.readline() # skip header
-        trds = collections.deque((backtest.process_trd(line) for line in fh))
+        trds = collections.deque((process_trd(line) for line in fh))
 
     trds_df = pd.read_csv(trds_csv, parse_dates=['ts']).set_index('ts')
 
@@ -44,7 +44,7 @@ def backtester(queue, bbos_csv, trds_csv):
         if strategy:
             params = strategy.params()
             log.operation({'msg': 'backtest', 'params': params})
-            signals = backtest.backtest(strategy, bbos.copy(), trds.copy())
+            signals = backtest(strategy, bbos.copy(), trds.copy())
             results = []
             for signal in signals:
                 outcomes = compute_outcomes(signal, trds_df, exit_timeouts)
