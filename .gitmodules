@@ -1,0 +1,3 @@
+[submodule "bot/strategies"]
+	path = bot/strategies
+	url = https://bitbucket.org/AlexandreBeaulne/strategies.git

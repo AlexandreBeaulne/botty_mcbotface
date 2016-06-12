@@ -6,7 +6,7 @@ import gzip
 import collections
 import numpy as np
 
-from bot.strategy import Strategy
+from bot.strategies.recoil import Recoil
 from bot.utils import Logger
 
 def process_trd(line):
@@ -60,8 +60,8 @@ if __name__ == '__main__':
     slowdown_threshold = config['slowdown_threshold']
     slowdown_duration = config['slowdown_duration']
 
-    strategy = Strategy(watch_threshold, watch_duration,
-                        slowdown_threshold, slowdown_duration)
+    strategy = Recoil(watch_threshold, watch_duration,
+                      slowdown_threshold, slowdown_duration)
 
     with io.TextIOWrapper(gzip.open(args.bbos, 'r')) as fh:
         fh.readline() # skip header

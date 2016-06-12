@@ -2,7 +2,7 @@
 ## Rundown of executables
 
 ### bot/bot.py: run the bot
-    $ python bot.bot --config config.json
+    $ python -m bot.bot --config config.json
 
 ### research/endofday.sh: bash script to complete end of day tasks (backup, report, etc)
     $ bash research/endofday.sh
@@ -55,8 +55,8 @@
 * ~~split bot and research code~~
 * ~~ensure report works when no signal~~
 * ~~perform grid search on parameters for strategy optimization~~
-* carve off and abstract strategies to be plug-and-play
-* add 'since' (instead of 'as-of') strategey
+* ~~carve off and abstract strategies to be plug-and-play~~
+* add 'since' (instead of 'as-of') strategy
 * add moving average strategy
 * run automatically without intervention (update config + run)
 * one-click provisioning of server

@@ -14,7 +14,7 @@ from ib.ext.EClientSocket import EClientSocket
 from bot.connector import Connector
 from bot.bookbuilder import BookBuilder
 from bot.utils import Logger
-from bot.strategy import Strategy
+from bot.strategies.recoil import Recoil
 
 class Bot(object):
 
@@ -26,8 +26,8 @@ class Bot(object):
 
         # strategy
         self.instruments = instruments
-        self.strategy = Strategy(watch_threshold, watch_duration,
-                                 slowdown_threshold, slowdown_duration)
+        self.strategy = Recoil(watch_threshold, watch_duration,
+                               slowdown_threshold, slowdown_duration)
 
         # operations
         self.host = host
