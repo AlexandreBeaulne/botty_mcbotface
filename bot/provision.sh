@@ -16,6 +16,10 @@ git clone https://github.com/AlexandreBeaulne/botty_mcbotface.git
 # * $ aws configure
 # * $ git config --global user.name "Alexandre Beaulne"
 # * $ git config --global user.email "alexandre.beaulne@gmail.com"
-
+# * setup crontab:
+# 10 13 * * 1-5 cd ~/botty_mcbotface/ && git pull origin master >> cron.log 2>&1
+# 20 13 * * * cd ~/botty_mcbotface/ && ~/anaconda3/bin/python -m bot.bot --config config.json >> cron.log 2>&1
+#
+#
 # might be useful: http://serverfault.com/a/595256
 

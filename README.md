@@ -56,9 +56,9 @@
 * ~~ensure report works when no signal~~
 * ~~perform grid search on parameters for strategy optimization~~
 * ~~carve off and abstract strategies to be plug-and-play~~
+* ~~run automatically without intervention (update config + run)~~
 * add 'since' (instead of 'as-of') strategy
 * add moving average strategy
-* run automatically without intervention (update config + run)
 * one-click provisioning of server
 * move from IB TWS to IB Gateway
 * develop a market scanner to dynamically scan for instruments to watch
