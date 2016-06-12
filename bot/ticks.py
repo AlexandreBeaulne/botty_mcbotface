@@ -6,6 +6,7 @@ however they are ill-suited for dynamic "real-time" continuous appends.
 """
 
 import numpy as np
+import statistics
 import bisect
 
 class BBOs(object):
@@ -21,10 +22,11 @@ class BBOs(object):
         self.bbos.append(bbo)
         self.num += 1
 
-    def get_current(self):
-        if self.bbos:
-            return self.bbos[-1]['bid_px'], self.bbos[-1]['ask_px']
-        return np.nan, np.nan
+    def avg_spread_since(self, ts):
+        i = bisect.bisect_left(self.ts[:self.num], ts)
+        if i and self.bbos[i:]:
+            spreads = [bbo['ask_px'] - bbo['bid_px'] for bbo in self.bbos[i:]]
+            return statistics.mean(spreads)
 
 class Trades(object):
 
