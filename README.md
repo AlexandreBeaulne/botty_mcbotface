@@ -54,12 +54,13 @@
 * ~~optimize gridsearch (run-time wise)~~
 * ~~split bot and research code~~
 * ~~ensure report works when no signal~~
-* perform grid search on parameters for strategy optimization
+* ~~perform grid search on parameters for strategy optimization~~
 * carve off and abstract strategies to be plug-and-play
-* add 'since' (instead of 'as-of'), moving average and parabolic curve fit strategies
+* add 'since' (instead of 'as-of') strategey
+* add moving average strategy
+* run automatically without intervention (update config + run)
 * one-click provisioning of server
 * move from IB TWS to IB Gateway
-* run automatically without intervention
 * develop a market scanner to dynamically scan for instruments to watch
 * develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
 
