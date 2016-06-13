@@ -4,9 +4,9 @@
     "port": 7496,
 
     "watch_threshold": 0.075,
-    "watch_duration": 90,
-    "slowdown_threshold": 0.02,
-    "slowdown_duration": 20,
+    "watch_duration": 60,
+    "slowdown_threshold": 0.01,
+    "slowdown_duration": 10,
 
     "instruments": [
         {"symbol": "ASNA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
