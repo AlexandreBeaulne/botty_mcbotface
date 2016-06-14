@@ -10,7 +10,7 @@
 
     "instruments": [
         {"symbol": "ASM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "ANF", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "AXU", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AGIO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "APHB", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AVXS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
@@ -53,7 +53,7 @@
         {"symbol": "GV", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "HHS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "HMNY", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "ICPT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "INFI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "JWN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "KEYW", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "KORS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
@@ -88,7 +88,7 @@
         {"symbol": "VBLT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "VKTX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "VRX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "WLL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "WGP", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "WAC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "XGTI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "YGE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
