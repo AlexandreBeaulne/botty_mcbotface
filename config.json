@@ -29,7 +29,7 @@
         {"symbol": "CETX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CLRB", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CRC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "CIEN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CNXR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "DRAM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "EBIO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "ECTE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
