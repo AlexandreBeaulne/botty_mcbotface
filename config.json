@@ -10,7 +10,7 @@
 
     "instruments": [
         {"symbol": "ASM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "AXU", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "AEGR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AKAO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "APHB", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AVXS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
@@ -67,7 +67,7 @@
         {"symbol": "ONCE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "OXGN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PACD", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "PEX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "PN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PSTG", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PWE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "RGR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
