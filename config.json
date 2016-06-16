@@ -23,7 +23,7 @@
         {"symbol": "BIOC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BOSC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CANF", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "CBYL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CAPR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CLF", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CCXI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CETX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
