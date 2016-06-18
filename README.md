@@ -57,12 +57,14 @@
 * ~~perform grid search on parameters for strategy optimization~~
 * ~~carve off and abstract strategies to be plug-and-play~~
 * ~~run automatically without intervention (update config + run)~~
+* develop position management system
 * add 'since' (instead of 'as-of') strategy
 * add moving average strategy
 * one-click provisioning of server
 * move from IB TWS to IB Gateway
 * develop a market scanner to dynamically scan for instruments to watch
-* develop order management system (i.e. order triggering, position mgmt, stop losses, etc)
+* factor in opening imbalances
+* develop order management system
 
 ## Origin of name
 

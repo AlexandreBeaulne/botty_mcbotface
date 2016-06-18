@@ -8,6 +8,7 @@ echo "export PATH=$HOME/anaconda3/bin:$PATH" >> $HOME/.bashrc
 git clone https://github.com/blampe/IbPy.git
 cd IbPy/ && sudo python setup.py install && cd $HOME
 sudo pip install awscli
+conda install pylint
 git clone https://github.com/AlexandreBeaulne/botty_mcbotface.git
 
 # missing:
