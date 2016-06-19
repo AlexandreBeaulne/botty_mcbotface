@@ -28,6 +28,9 @@ class BBOs(object):
             spreads = [bbo['ask_px'] - bbo['bid_px'] for bbo in self.bbos[i:]]
             return statistics.mean(spreads)
 
+    def current_bbo(self):
+        return self.bbos[-1]
+
 class Trades(object):
 
     def __init__(self):

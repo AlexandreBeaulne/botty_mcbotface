@@ -26,6 +26,7 @@ class Bot(object):
 
         # strategy
         self.instruments = instruments
+        self.contracts = dict()
         self.strategy = Recoil(watch_threshold, watch_duration,
                                slowdown_threshold, slowdown_duration)
 
@@ -33,6 +34,7 @@ class Bot(object):
         self.host = host
         self.port = port
         self.connection = EClientSocket(Connector(self.instruments, self.msgs))
+        sefl.next_id = 1
         self.log = logger
 
     def connect(self):
@@ -53,6 +55,7 @@ class Bot(object):
             contract.m_currency = instrument['currency']
             contract.m_secType = instrument['secType']
             contract.m_exchange = instrument['exchange']
+            self.contracts[instrument['symbol']] = contract
             self.connection.reqMktData(ticker_id, contract, '', False)
 
     def run(self):
@@ -61,12 +64,31 @@ class Bot(object):
             self.log.raw(msg)
 
             tick = self.book_builder.process_raw_tick(msg)
-            if tick:
-                self.log.data(tick)
-                signal = self.strategy.handle_tick(msg)
 
-                if signal:
-                    self.log.order(signal)
+            if not tick:
+                continue
+
+            self.log.data(tick)
+            signal = self.strategy.handle_tick(msg)
+
+            if not signal:
+                continue
+
+            self.log.order(signal)
+            order = self.strategy.place_order(signal)
+
+            if not order:
+                continue
+
+            c = self.contracts[signal['symbol']]
+            self.log.order({'symbol': signal['symbol'],
+                            'qty': order.m_totalQuantity,
+                            'type': order.m_orderType,
+                            'goodTill': order.m_goodTillDate,
+                            'px': order.m_lmtPrice,
+                            'action': order.m_action})
+            #self.connection.placeOrder(id=self.next_id, contract=c, order=order)
+            sefl.next_id += 1
 
 if __name__ == '__main__':
 
