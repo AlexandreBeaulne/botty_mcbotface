@@ -38,7 +38,7 @@
         {"symbol": "EMES", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "EXEL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "EXAS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "FEIC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "FATE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "FONR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "FOSL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GBIM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
