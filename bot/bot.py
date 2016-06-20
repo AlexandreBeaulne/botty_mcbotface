@@ -34,7 +34,7 @@ class Bot(object):
         self.host = host
         self.port = port
         self.connection = EClientSocket(Connector(self.instruments, self.msgs))
-        sefl.next_id = 1
+        self.next_id = 1
         self.log = logger
 
     def connect(self):
