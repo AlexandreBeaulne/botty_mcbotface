@@ -69,7 +69,7 @@ class Bot(object):
                 continue
 
             self.log.data(tick)
-            signal = self.strategy.handle_tick(msg)
+            signal = self.strategy.handle_tick(tick)
 
             if not signal:
                 continue
@@ -88,7 +88,7 @@ class Bot(object):
                             'px': order.m_lmtPrice,
                             'action': order.m_action})
             #self.connection.placeOrder(id=self.next_id, contract=c, order=order)
-            sefl.next_id += 1
+            self.next_id += 1
 
 if __name__ == '__main__':
 
