@@ -59,9 +59,10 @@
 * ~~run automatically without intervention (update config + run)~~
 * develop position management system
 * add 'since' (instead of 'as-of') strategy
+* differentiate long and short signal
 * add moving average strategy
 * one-click provisioning of server
-* move from IB TWS to IB Gateway
+* move IB TWS from windows to linux machine (t2.small)
 * develop a market scanner to dynamically scan for instruments to watch
 * factor in opening imbalances
 * develop order management system
