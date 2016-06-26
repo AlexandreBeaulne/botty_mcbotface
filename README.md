@@ -57,8 +57,8 @@
 * ~~perform grid search on parameters for strategy optimization~~
 * ~~carve off and abstract strategies to be plug-and-play~~
 * ~~run automatically without intervention (update config + run)~~
+* ~~add 'since' (instead of 'as-of') strategy~~
 * develop position management system
-* add 'since' (instead of 'as-of') strategy
 * differentiate long and short signal
 * one-click provisioning of server
 * move IB TWS from windows to linux machine (t2.small)
