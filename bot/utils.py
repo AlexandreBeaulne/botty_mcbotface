@@ -57,3 +57,6 @@ class Logger(object):
     def misc(self, msg):
         self.__log__('MISC', msg)
 
+    def debug(self, msg):
+        self.__log__('DEBUG', msg)
+

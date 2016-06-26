@@ -21,16 +21,11 @@ COLS = ['watch_threshold', 'watch_duration', 'slowdown_threshold',
         'slowdown_duration', 'direction', 'timeout', 'return']
 
 # enumerate parameter spaces
-#watch_thrshlds = [0.02, 0.035, 0.05, 0.075, 0.1]
-#watch_drtns = [5, 10, 30, 60, 90, 120, 300]
-#slowdown_thrshlds = [0.001, 0.002, 0.005, 0.01, 0.02, 0.04]
-#slowdown_drtns = [1, 2, 5, 10, 20, 30, 60]
-#exit_timeouts = [1, 2, 5, 10, 20, 30, 40, 60, 90, 120, 180]
-watch_thrshlds = [0.075, 0.1]
-watch_drtns = [10]
-slowdown_thrshlds = [0.001]
-slowdown_drtns = [1, 2]
-exit_timeouts = [60]
+watch_thrshlds = [0.02, 0.035, 0.05, 0.075, 0.1]
+watch_drtns = [5, 10, 30, 60, 90, 120, 300]
+slowdown_thrshlds = [0.001, 0.002, 0.005, 0.01, 0.02, 0.04]
+slowdown_drtns = [1, 2, 5, 10, 20, 30, 60]
+exit_timeouts = [1, 2, 5, 10, 20, 30, 40, 60, 90, 120, 180]
 
 def backtester(queue, bbos_csv, trds_csv):
 
@@ -79,7 +74,7 @@ if __name__ == '__main__':
     # loop over all possibilities
     combos = product(watch_thrshlds, watch_drtns, slowdown_thrshlds, slowdown_drtns)
     for wt, wd, st, sd in combos:
-        queue.put(Recoil(wt, wd, st, sd))
+        queue.put(Recoil(wt, wd, st, sd, log))
 
     [queue.put(None) for i in range(num_workers)]
     queue.close()

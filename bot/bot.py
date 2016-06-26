@@ -28,7 +28,7 @@ class Bot(object):
         self.instruments = instruments
         self.contracts = dict()
         self.strategy = Recoil(watch_threshold, watch_duration,
-                               slowdown_threshold, slowdown_duration)
+                               slowdown_threshold, slowdown_duration, logger)
 
         # operations
         self.host = host

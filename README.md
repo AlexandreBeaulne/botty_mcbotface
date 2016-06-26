@@ -60,12 +60,10 @@
 * develop position management system
 * add 'since' (instead of 'as-of') strategy
 * differentiate long and short signal
-* add moving average strategy
 * one-click provisioning of server
 * move IB TWS from windows to linux machine (t2.small)
+* add moving average strategy
 * develop a market scanner to dynamically scan for instruments to watch
-* factor in opening imbalances
-* develop order management system
 
 ## Origin of name
 
