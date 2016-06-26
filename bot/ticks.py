@@ -53,8 +53,9 @@ class Trades(object):
     def maximums_since(self, ts):
         i = bisect.bisect_left(self.ts[:self.num], ts)
         if i:
-            ts = self.trds[i]['ts']
-            prices = [trd['px'] for trd in self.trds[i:]]
-            return ts, min(prices), max(prices)
-        return np.nan, np.nan, np.nan
+            prices = [(trd['px'], trd['ts']) for trd in self.trds[i:]]
+            min_px, min_ts = min(prices)
+            max_px, max_ts = max(prices)
+            return (min_ts, min_px), (max_ts, max_px)
+        return (np.nan, np.nan), (np.nan, np.nan)
 
