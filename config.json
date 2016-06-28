@@ -59,7 +59,7 @@
         {"symbol": "LBIX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "LPTN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MGT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "MEET", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "MRNS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MTL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "NADL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "NYMX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
