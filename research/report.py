@@ -51,7 +51,7 @@ def parse_log(params, file_handle):
                 print('[ERROR] building report from logs with different params')
                 sys.exit(1)
             params = tmp
-        elif log['type'] == 'ORDER' and log['msg']['msg'] == 'signal triggered':
+        elif log['type'] == 'ORDER' and 'msg' in log['msg'] and log['msg']['msg'] == 'signal triggered':
             signal = dict()
             signal['symbol'] = log['msg']['symbol']
             signal['ts'] = parse_ts(log['ts'])
@@ -193,7 +193,7 @@ def compute_outcomes(signal, trds, exit_timeouts):
     dir = signal['direction']
     mult = {'long': 100, 'short': -100}[dir]
     outcomes = []
-    df = trds[trds['symbol'] == sym]
+    df = trds[trds['symbol'] == sym].groupby(level=0).last()
     for exit_timeout in exit_timeouts:
         t = df.index.asof(t0 + np.timedelta64(exit_timeout, 's'))
         px = df.loc[t]['px']

@@ -18,8 +18,8 @@ if __name__ == '__main__':
     bbos_df = pd.read_csv('logs/bbos.csv.gz')
     trds_df = pd.read_csv('logs/trds.csv.gz')
 
-    bbos_df = pd.concat([bbos_df, bbos]).sort_values('ts')
-    trds_df = pd.concat([trds_df, trds]).sort_values('ts')
+    bbos_df = pd.concat([bbos_df, bbos]).sort_values('ts').drop_duplicates()
+    trds_df = pd.concat([trds_df, trds]).sort_values('ts').drop_duplicates()
 
     cols = ['ts', 'symbol', 'bid_sz', 'bid_px', 'ask_px', 'ask_sz']
     bbos_df.to_csv('logs/bbos.csv.gz', compression='gzip',
