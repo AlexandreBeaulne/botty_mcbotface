@@ -10,7 +10,7 @@
 
     "instruments": [
         {"symbol": "ASM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "AEGR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "AMPE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AKER", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "APHB", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "AVXS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
