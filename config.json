@@ -51,8 +51,8 @@
         {"symbol": "GRWC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GST", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GV", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "HHS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "HMNY", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "HIMX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "INSY", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "IBIO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "JWN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "LNTH", "currency": "USD", "secType": "STK", "exchange": "SMART"},
@@ -90,7 +90,7 @@
         {"symbol": "VRX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "WGP", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "WAC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "XNCR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "XBIT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "YGE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "Z", "currency": "USD", "secType": "STK", "exchange": "SMART"}
     ]
