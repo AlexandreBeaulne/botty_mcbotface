@@ -61,7 +61,7 @@ if __name__ == '__main__':
     slowdown_duration = config['slowdown_duration']
 
     strategy = Recoil2(watch_threshold, watch_duration,
-                       slowdown_threshold, slowdown_duration, log)
+                       slowdown_threshold, slowdown_duration)
 
     with io.TextIOWrapper(gzip.open(args.bbos, 'r')) as fh:
         fh.readline() # skip header

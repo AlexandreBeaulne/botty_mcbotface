@@ -74,7 +74,7 @@ if __name__ == '__main__':
     # loop over all possibilities
     combos = product(watch_thrshlds, watch_drtns, slowdown_thrshlds, slowdown_drtns)
     for wt, wd, st, sd in combos:
-        queue.put(Recoil2(wt, wd, st, sd, log))
+        queue.put(Recoil2(wt, wd, st, sd))
 
     [queue.put(None) for i in range(num_workers)]
     queue.close()
