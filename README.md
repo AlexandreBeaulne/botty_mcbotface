@@ -58,8 +58,9 @@
 * ~~carve off and abstract strategies to be plug-and-play~~
 * ~~run automatically without intervention (update config + run)~~
 * ~~add 'since' (instead of 'as-of') strategy~~
-* develop position management system
 * differentiate long and short signal
+* split historical data in daily files
+* develop position management system
 * one-click provisioning of server
 * move IB TWS from windows to linux machine (t2.small)
 * add moving average strategy
