@@ -13,7 +13,7 @@ from itertools import product
 import pandas as pd
 
 from bot.strategies.recoil import Recoil
-#from bot.strategies.recoil2 import Recoil2
+from bot.strategies.recoil2 import Recoil2
 from bot.utils import Logger
 from research.backtest import backtest, process_bbo, process_trd
 from research.report import compute_outcomes
@@ -22,11 +22,11 @@ COLS = ['watch_threshold', 'watch_duration', 'slowdown_threshold',
         'slowdown_duration', 'direction', 'timeout', 'return']
 
 # enumerate parameter spaces
-watch_thrshlds = [0.02, 0.035, 0.05, 0.075, 0.1]
-watch_drtns = [5, 10, 30, 60, 90, 120, 300]
+watch_thrshlds = [0.035, 0.05, 0.075, 0.1]
+watch_drtns = [5, 10, 30, 60, 90, 120, 180]
 slowdown_thrshlds = [0.001, 0.002, 0.005, 0.01, 0.02, 0.04]
-slowdown_drtns = [1, 2, 5, 10, 20, 30, 60]
-exit_timeouts = [1, 2, 5, 10, 20, 30, 40, 60, 90, 120, 180]
+slowdown_drtns = [2, 5, 10, 20, 30]
+exit_timeouts = [2, 5, 10, 20, 30, 40, 60, 90, 120]
 
 def backtester(queue, bbos_csv, trds_csv):
 
@@ -48,11 +48,12 @@ def backtester(queue, bbos_csv, trds_csv):
             signals = backtest(strategy, bbos.copy(), trds.copy())
             results = []
             for signal in signals:
-                outcomes = compute_outcomes(signal, trds_df, exit_timeouts)
+                timeouts = [t for t in exit_timeouts if t <= params['watch_duration']]
+                outcomes = compute_outcomes(signal, trds_df, timeouts)
                 results.extend([{**params, **outcome} for outcome in outcomes])
             if results:
                 (pd.DataFrame.from_dict(results)
-                   .to_csv('gridsearch.csv', index=False, mode='a', header=False))
+                   .to_csv('/dev/shm/gridsearch.csv', index=False, mode='a'))
         else:
             break
 
@@ -75,7 +76,8 @@ if __name__ == '__main__':
     # loop over all possibilities
     combos = product(watch_thrshlds, watch_drtns, slowdown_thrshlds, slowdown_drtns)
     for wt, wd, st, sd in combos:
-        queue.put(Recoil(wt, wd, st, sd))
+        if sd < wd and st < wt:
+            queue.put(Recoil2(wt, wd, st, sd))
 
     [queue.put(None) for i in range(num_workers)]
     queue.close()

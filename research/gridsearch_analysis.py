@@ -3,9 +3,12 @@ import numpy as np
 import pandas as pd
 import dask.dataframe as dd
 
+def downside_deviation(xs):
+    return np.std([x for x in xs if x < 0])
+
 if __name__ == '__main__':
 
-    cols = ['watch_threshold', 'watch_duration', 'slowdown_threshold',
+    cols = ['strategy', 'watch_threshold', 'watch_duration', 'slowdown_threshold',
             'slowdown_duration', 'direction', 'timeout']
 
     # raw dataset is too big for in-memory manipulation.
@@ -20,6 +23,7 @@ if __name__ == '__main__':
     gby.mean().to_csv('mean.csv')
     gby.max().to_csv('max.csv')
     gby.apply(np.std)['return'].to_csv('std.csv')
+    gby.apply(downside_deviation)['return'].to_csv('downside_dev.csv')
 
     # next present the results using full pandas feature set
 
@@ -33,13 +37,15 @@ if __name__ == '__main__':
               .rename(columns={'return': 'max'}))
     stds = pd.read_csv('std.csv', index_col=cols, header=None,
                        names=cols + ['std'])
+    downside_devs = pd.read_csv('downside_dev.csv', index_col=cols, header=None,
+                                names=cols + ['downside_dev'])
+
     df = (counts.join(mins, how='outer')
                 .join(means, how='outer')
                 .join(maxs, how='outer')
                 .join(stds, how='outer')
+                .join(downside_devs, how='outer')
                 .reset_index())
 
-    results = (df.loc[df['count'] > 36]
-                 .sort_values('mean', ascending=False))
-    results.to_csv('gridsearch_results.csv', index=False)
+    df.to_csv('gridsearch_results.csv', index=False)
 

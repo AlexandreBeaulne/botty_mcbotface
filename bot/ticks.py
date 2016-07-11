@@ -16,17 +16,14 @@ class BBOs(object):
         preallocated_size = 10000000
         self.ts = np.empty(preallocated_size, dtype='datetime64[us]')
         self.bbos = []
+        self.spread = 0
 
-    def new_bbo(self, bbo):
+    def new_bbo(self, bbo, factor=0.2):
         self.ts[self.num] = bbo['ts']
         self.bbos.append(bbo)
         self.num += 1
-
-    def avg_spread_since(self, ts):
-        i = bisect.bisect_left(self.ts[:self.num], ts)
-        if i and self.bbos[i:]:
-            spreads = [bbo['ask_px'] - bbo['bid_px'] for bbo in self.bbos[i:]]
-            return statistics.mean(spreads)
+        spread = bbo['ask_px'] - bbo['bid_px']
+        self.spread = (1 - factor) * self.spread + factor * spread
 
     def current_bbo(self):
         return self.bbos[-1]

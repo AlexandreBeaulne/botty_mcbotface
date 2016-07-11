@@ -37,6 +37,7 @@ class Logger(object):
             timestamp = ts()
         log = template.format(timestamp, type_, json.dumps(msg, cls=NumpyEncoder))
         self.fh.write(log)
+        self.fh.flush()
         print(log, end='')
 
     def operation(self, msg):
