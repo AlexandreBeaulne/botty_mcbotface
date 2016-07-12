@@ -22,7 +22,7 @@
         {"symbol": "BSPM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BLFS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BOSC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "CUDA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CDTI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CAPR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CLVS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CERS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
