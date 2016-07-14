@@ -22,8 +22,9 @@ class BBOs(object):
         self.ts[self.num] = bbo['ts']
         self.bbos.append(bbo)
         self.num += 1
-        spread = bbo['ask_px'] - bbo['bid_px']
-        self.spread = (1 - factor) * self.spread + factor * spread
+        if bbo['ask_px'] and bbo['bid_px']:
+            spread = bbo['ask_px'] - bbo['bid_px']
+            self.spread = (1 - factor) * self.spread + factor * spread
 
     def current_bbo(self):
         return self.bbos[-1]
