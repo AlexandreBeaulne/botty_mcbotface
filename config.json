@@ -3,10 +3,10 @@
     "host": "54.197.15.42",
     "port": 7496,
 
-    "watch_threshold": 0.075,
-    "watch_duration": 60,
+    "watch_threshold": 0.06,
+    "watch_duration": 30,
     "slowdown_threshold": 0.01,
-    "slowdown_duration": 10,
+    "slowdown_duration": 15,
 
     "instruments": [
         {"symbol": "AGO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
