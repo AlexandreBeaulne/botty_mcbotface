@@ -43,7 +43,7 @@
         {"symbol": "FVE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GOL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GALE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "GLBS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "GLBL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GNC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GOGO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GBR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
