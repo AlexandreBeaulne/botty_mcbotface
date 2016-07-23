@@ -36,22 +36,20 @@ def pretty_label(ts, offset=-4):
     ts = datetime.fromtimestamp(ts).replace(tzinfo=timezone(timedelta()))
     return ts.astimezone(timezone(timedelta(hours=offset))).strftime('%H:%M:%S')
 
-def parse_log(params, file_handle):
+def parse_log(strategies, file_handle):
     signals = []
     for line in file_handle:
         log = json.loads(line)
         if log['type'] == 'OPERATION' and 'config' in log['msg']:
-            config = log['msg']['config']
-            tmp = dict()
-            tmp['watch_threshold'] = config['watch_threshold']
-            tmp['watch_duration']= config['watch_duration']
-            tmp['slowdown_threshold'] = config['slowdown_threshold']
-            tmp['slowdown_duration'] = config['slowdown_duration']
-            if params and tmp != params:
-                print('[ERROR] building report from logs with different params')
+            strats = log['msg']['config']['strategies']
+            if strategies and strats != strategies:
+                print(('[ERROR] trying to build a reports from'
+                       'different set of strategies'))
                 sys.exit(1)
-            params = tmp
-        elif log['type'] == 'ORDER' and 'msg' in log['msg'] and log['msg']['msg'] == 'signal triggered':
+            strategies = strats
+        elif (log['type'] == 'ORDER' and
+              'msg' in log['msg'] and
+              log['msg']['msg'] == 'signal triggered'):
             signal = dict()
             signal['symbol'] = log['msg']['symbol']
             signal['ts'] = parse_ts(log['ts'])
@@ -64,18 +62,18 @@ def parse_log(params, file_handle):
             signal['slowdown_px'] = log['msg']['slowdown_px']
             signal['slowdown_chng'] = log['msg']['slowdown_chng']
             signals.append(signal)
-    return params, signals
+    return strategies, signals
 
 def parse_logs(logs):
-    params = dict()
+    strategies = []
     signals = []
     for logfile in logs:
         with io.TextIOWrapper(gzip.open(logfile, 'r')) as fh:
-            params, logsignals = parse_log(params, fh)
+            strategies, logsignals = parse_log(strategies, fh)
         signals += logsignals
-    return params, signals
+    return strategies, signals
 
-def build_graph(signal, params, bbos, trds):
+def build_graph(signal, bbos, trds):
 
     # extract vars for the graphs
     ts = signal['ts']
@@ -86,11 +84,10 @@ def build_graph(signal, params, bbos, trds):
     slowdown_px = signal['slowdown_px']
     px = signal['current_px']
     direction = signal['direction']
-    watch_duration = params['watch_duration']
 
     # isolate data around the signal
-    start = ts - np.timedelta64(3 * watch_duration, 's')
-    end = ts + np.timedelta64(3 * watch_duration, 's')
+    start = ts - np.timedelta64(120, 's')
+    end = ts + np.timedelta64(120, 's')
     filter_ = (trds.index >= start) & (trds.index <= end)
     filter_ &= (trds['symbol'] == symbol)
     trds = trds[filter_]
@@ -138,18 +135,17 @@ def build_graph(signal, params, bbos, trds):
     plt.close()
     return base64.b64encode(buf.getvalue()).decode('ascii')
 
-def normalize_signal(signal, params, trds):
+def normalize_signal(signal, trds):
 
     # extract vars for the graphs
     ts = signal['ts']
     symbol = signal['symbol']
     px = signal['current_px']
     direction = signal['direction']
-    watch_duration = params['watch_duration']
 
     # isolate data around the signal
-    start = ts - np.timedelta64(3 * watch_duration, 's')
-    end = ts + np.timedelta64(3 * watch_duration, 's')
+    start = ts - np.timedelta64(120, 's')
+    end = ts + np.timedelta64(120, 's')
     filter_ = (trds.index >= start) & (trds.index <= end)
     filter_ &= (trds['symbol'] == symbol)
     data = trds[filter_]
@@ -240,7 +236,7 @@ if __name__ == '__main__':
     parser.add_argument('--logs', nargs='+')
     args = parser.parse_args()
 
-    params, signals = parse_logs(args.logs)
+    strategies, signals = parse_logs(args.logs)
 
     if not signals: #no signal to report, exit
         sys.exit()
@@ -249,24 +245,25 @@ if __name__ == '__main__':
     trds = pd.read_csv('logs/trds.csv.gz', parse_dates=['ts']).set_index('ts')
 
     data = dict()
-    data['figures'] = [build_graph(s, params, bbos, trds) for s in signals]
-    normalized = [normalize_signal(s, params, trds) for s in signals]
+    data['figures'] = [build_graph(s, bbos, trds) for s in signals]
+    normalized = [normalize_signal(s, trds) for s in signals]
     data['longs'], data['shorts'] = normalized_graphs(normalized)
     outcomes = [compute_outcomes(s, trds, range(5, 180, 5)) for s in signals]
     outcomes = pd.DataFrame.from_dict([x for xs in outcomes for x in xs])
     data['longs_distn'] = outcomes_graphs('long', outcomes)
     data['shorts_distn'] = outcomes_graphs('short', outcomes)
 
+    min_date = min([s['ts'] for s in signals])
+    max_date = max([s['ts'] for s in signals])
+    data['start'] = pretty_ts(min_date)
+    data['end'] = pretty_ts(max_date)
+    data['strategies'] = strategies
+    filename = 'reports/report.{}.{}.html'
+    filename = filename.format(pretty_date(min_date), pretty_date(max_date))
+
     with open('reports/template.html') as fh:
         template = jinja2.Template(fh.read())
 
-    min_date = min([s['ts'] for s in signals])
-    max_date = max([s['ts'] for s in signals])
-    params['start'] = pretty_ts(min_date)
-    params['end'] = pretty_ts(max_date)
-    data['params'] = params
-    filename = 'reports/report.{}.{}.html'
-    filename = filename.format(pretty_date(min_date), pretty_date(max_date))
     with open(filename, 'w') as fh:
         fh.write(template.render(data=data))
 

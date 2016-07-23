@@ -8,21 +8,21 @@
 
 <h1>Report</h1>
 
+<table>
+    <tr><td>start time:</td><td>{{data['start']}}</td></tr>
+    <tr><td>end time:</td><td>{{data['end']}}</td></tr>
+</table>
+
 <h2>Caveats</h2>
 <ul>
 <li>Pre fees and slippage</li>
 </ul>
 
-<h2>Parameters</h2>
+<h2>Strategies</h2>
 
-<table>
-    <tr><td>watch duration:</td><td>{{data['params']['watch_duration']}}s</td></tr>
-    <tr><td>watch threshold:</td><td>{{100 * data['params']['watch_threshold']}}%</td></tr>
-    <tr><td>slowdown duration:</td><td>{{data['params']['slowdown_duration']}}s</td></tr>
-    <tr><td>slowdown threshold:</td><td>{{100 * data['params']['slowdown_threshold']}}%</td></tr>
-    <tr><td>start time:</td><td>{{data['params']['start']}}</td></tr>
-    <tr><td>end time:</td><td>{{data['params']['end']}}</td></tr>
-</table>
+{% for strategy in data['strategies'] %}
+{{strategy}}
+{% endfor %}
 
 <h2>Aggregated signals</h2>
 <img src='data:image/png;base64,{{data['longs']}}'/>

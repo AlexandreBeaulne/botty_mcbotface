@@ -6,8 +6,8 @@ import gzip
 import collections
 import numpy as np
 
-from bot.strategies.recoil import Recoil
-#from bot.strategies.recoil2 import Recoil2
+#from bot.strategies.recoil import Recoil
+from bot.strategies.recoil2 import Recoil2
 from bot.utils import Logger
 
 def process_trd(line):
@@ -23,7 +23,7 @@ def process_bbo(line):
             'bid_sz': int(float(bid_sz)), 'bid_px': float(bid_px),
             'ask_px': float(ask_px), 'ask_sz': int(float(ask_sz))}
 
-def backtest(strategy, bbos, trds):
+def backtest(strategies, bbos, trds):
 
     end_of_time = np.datetime64('3000-01-01T00:00:00.000000')
 
@@ -33,14 +33,16 @@ def backtest(strategy, bbos, trds):
         next_trd = trds[0] if trds else {'ts': end_of_time}
 
         if next_trd['ts'] < next_bbo['ts']:
-            signal = strategy.handle_tick(next_trd)
-            if signal:
-                yield signal
+            for strategy in strategies:
+                signal = strategy.handle_tick(next_trd)
+                if signal:
+                    yield signal
             trds.popleft()
         else:
-            signal = strategy.handle_tick(next_bbo)
-            if signal:
-                yield signal
+            for strategy in strategies:
+                signal = strategy.handle_tick(next_bbo)
+                if signal:
+                    yield signal
             bbos.popleft()
 
 if __name__ == '__main__':
@@ -56,13 +58,14 @@ if __name__ == '__main__':
     log = Logger('backtest')
     log.operation({'config': config})
 
-    watch_threshold = config['watch_threshold']
-    watch_duration = config['watch_duration']
-    slowdown_threshold = config['slowdown_threshold']
-    slowdown_duration = config['slowdown_duration']
-
-    strategy = Recoil(watch_threshold, watch_duration,
-                      slowdown_threshold, slowdown_duration)
+    strategies = []
+    for strategy in config['strategies']:
+        watch_threshold = strategy['watch_threshold']
+        watch_duration = strategy['watch_duration']
+        slowdown_threshold = strategy['slowdown_threshold']
+        slowdown_duration = strategy['slowdown_duration']
+        strategies.append(Recoil2(watch_threshold, watch_duration,
+                                  slowdown_threshold, slowdown_duration))
 
     with io.TextIOWrapper(gzip.open(args.bbos, 'r')) as fh:
         fh.readline() # skip header
@@ -72,6 +75,6 @@ if __name__ == '__main__':
         fh.readline() # skip header
         trds = collections.deque((process_trd(line) for line in fh))
 
-    for signal in backtest(strategy, bbos, trds):
+    for signal in backtest(strategies, bbos, trds):
         log.order(signal)
 
