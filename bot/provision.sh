@@ -21,7 +21,7 @@ git config --global user.email "alexandre.beaulne@gmail.com"
 # * $ aws configure
 # * setup crontab:
 # 10 13 * * 1-5 cd ~/botty_mcbotface/ && git pull origin master >> cron.log 2>&1
-# 20 13 * * * cd ~/botty_mcbotface/ && ~/anaconda3/bin/python -m bot.bot --config config.json >> cron.log 2>&1
+# 20 13 * * 1-5 cd ~/botty_mcbotface/ && ~/anaconda3/bin/python -m bot.bot --config config.json >> cron.log 2>&1
 #
 # might be useful: http://serverfault.com/a/595256
 # how to: $ ssh -i misc/BottyMcbotface.pem ec2-user@ec2-54-84-26-142.compute-1.amazonaws.com "$(< bot/provision.sh)"
