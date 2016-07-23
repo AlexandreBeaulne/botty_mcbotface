@@ -58,8 +58,8 @@
 * ~~carve off and abstract strategies to be plug-and-play~~
 * ~~run automatically without intervention (update config + run)~~
 * ~~add 'since' (instead of 'as-of') strategy~~
+* ~~differentiate long and short signal~~
 * fix y-axis of volume in reports' graph
-* differentiate long and short signal
 * split historical data in daily files
 * develop position management system
 * one-click provisioning of server

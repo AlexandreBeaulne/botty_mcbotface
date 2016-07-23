@@ -18,17 +18,21 @@ from bot.strategies.recoil2 import Recoil2
 
 class Bot(object):
 
-    def __init__(self, host, port, instruments, watch_threshold, watch_duration,
-                 slowdown_threshold, slowdown_duration, logger):
+    def __init__(self, host, port, strategies, instruments, logger):
 
         self.msgs = queue.Queue()
         self.book_builder = BookBuilder()
 
-        # strategy
+        # strategies
         self.instruments = instruments
         self.contracts = dict()
-        self.strategy = Recoil2(watch_threshold, watch_duration,
-                                slowdown_threshold, slowdown_duration)
+        self.strategies = []
+        for strategy in strategies:
+            strat = Recoil2(strategy['watch_threshold'],
+                            strategy['watch_duration'],
+                            strategy['slowdown_threshold'],
+                            strategy['slowdown_duration']),
+            self.strategies.append(strat)
 
         # operations
         self.host = host
@@ -69,26 +73,29 @@ class Bot(object):
                 continue
 
             self.log.data(tick)
-            signal = self.strategy.handle_tick(tick)
 
-            if not signal:
-                continue
+            for strategy in self.strategies:
+                signal = strategy.handle_tick(tick)
 
-            self.log.order(signal)
-            order = self.strategy.place_order(signal)
+                if not signal:
+                    continue
 
-            if not order:
-                continue
+                self.log.order(signal)
+                order = strategy.place_order(signal)
 
-            c = self.contracts[signal['symbol']]
-            self.log.order({'symbol': signal['symbol'],
-                            'qty': order.m_totalQuantity,
-                            'type': order.m_orderType,
-                            'goodTill': order.m_goodTillDate,
-                            'px': order.m_lmtPrice,
-                            'action': order.m_action})
-            #self.connection.placeOrder(id=self.next_id, contract=c, order=order)
-            self.next_id += 1
+                if not order:
+                    continue
+
+                c = self.contracts[signal['symbol']]
+                self.log.order({'symbol': signal['symbol'],
+                                'qty': order.m_totalQuantity,
+                                'type': order.m_orderType,
+                                'goodTill': order.m_goodTillDate,
+                                'px': order.m_lmtPrice,
+                                'action': order.m_action})
+                #self.connection.placeOrder(id=self.next_id, contract=c,
+                #                           order=order)
+                self.next_id += 1
 
 if __name__ == '__main__':
 
