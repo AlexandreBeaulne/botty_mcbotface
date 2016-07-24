@@ -93,8 +93,8 @@ class Bot(object):
                                 'goodTill': order.m_goodTillDate,
                                 'px': order.m_lmtPrice,
                                 'action': order.m_action})
-                #self.connection.placeOrder(id=self.next_id, contract=c,
-                #                           order=order)
+                self.connection.placeOrder(id=self.next_id, contract=c,
+                                           order=order)
                 self.next_id += 1
 
 if __name__ == '__main__':
