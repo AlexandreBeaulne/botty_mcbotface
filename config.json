@@ -8,13 +8,8 @@
          "watch_threshold": -0.06,
          "watch_duration": 30,
          "slowdown_threshold": 0.01,
-         "slowdown_duration": 15},
-        {"strategy": "Recoil2",
-         "watch_threshold": 0.05,
-         "watch_duration": 10,
-         "slowdown_threshold": 0.005,
-         "slowdown_duration": 5}
-    ],
+         "slowdown_duration": 15}
+     ],
 
     "instruments": [
         {"symbol": "ARNA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
