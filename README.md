@@ -60,7 +60,6 @@
 * ~~add 'since' (instead of 'as-of') strategy~~
 * ~~differentiate long and short signal~~
 * fix y-axis of volume in reports' graph
-* split historical data in daily files
 * develop position management system
 * one-click provisioning of server
 * move IB TWS from windows to linux machine (t2.small)
