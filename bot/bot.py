@@ -31,7 +31,7 @@ class Bot(object):
             strat = Recoil2(strategy['watch_threshold'],
                             strategy['watch_duration'],
                             strategy['slowdown_threshold'],
-                            strategy['slowdown_duration']),
+                            strategy['slowdown_duration'])
             self.strategies.append(strat)
 
         # operations
