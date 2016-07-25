@@ -83,7 +83,7 @@
         {"symbol": "SAGE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "STX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "TWER", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "TASR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "TBRA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "TAHO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "TOPS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "UNXL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
