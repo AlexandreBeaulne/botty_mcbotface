@@ -35,7 +35,13 @@ class Logger(object):
             timestamp = msg['ts'].tolist().isoformat()
         else:
             timestamp = ts()
-        log = template.format(timestamp, type_, json.dumps(msg, cls=NumpyEncoder))
+        try:
+            serialized_msg = json.dumps(msg, cls=NumpyEncoder)
+        except:
+            serialized_msg = json.dumps(str(msg))
+            error_log = 'Unable to JSON encode {}'.format(serialized_msg)
+            self.fh.write(template.format(timestamp, 'ERROR', error_log))
+        log = template.format(timestamp, type_, serialized_msg)
         self.fh.write(log)
         self.fh.flush()
         print(log, end='')
