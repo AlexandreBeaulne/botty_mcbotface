@@ -43,7 +43,7 @@ class Connector(EWrapper):
                     permId, parentId, lastFillPrice, clientId, whyHeId):
         msg = {'type': 'orderStatus', 'orderId': orderId, 'status': status,
                'filled': filled, 'remaining': remaining,
-               'avgFillPrice': avgfillPrice, 'permId': permId,
+               'avgFillPrice': avgFillPrice, 'permId': permId,
                'parentId': parentId, 'lastFillPrice': lastFillPrice,
                'clientId': clientId, 'whyHeId': whyHeId, 'ts': now()}
         self.msgs.put(msg)
