@@ -39,8 +39,8 @@ class Logger(object):
             serialized_msg = json.dumps(msg, cls=NumpyEncoder)
         except:
             serialized_msg = json.dumps(str(msg))
-            error_log = 'Unable to JSON encode {}'.format(serialized_msg)
-            self.fh.write(template.format(timestamp, 'ERROR', error_log))
+            err = {'msg': 'Unable to JSON encode', 'log': serialized_msg}
+            self.fh.write(template.format(timestamp, 'ERROR', json.dumps(err)))
         log = template.format(timestamp, type_, serialized_msg)
         self.fh.write(log)
         self.fh.flush()
