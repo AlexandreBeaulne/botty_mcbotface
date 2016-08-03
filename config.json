@@ -81,7 +81,7 @@
         {"symbol": "SPU", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "SPHS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "SINO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "STX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "SHIP", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "TXRH", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "TPX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "TSRI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
