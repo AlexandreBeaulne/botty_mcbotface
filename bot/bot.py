@@ -68,6 +68,7 @@ class Bot(object):
             self.log.raw(msg)
 
             if msg['type'] == 'nextValidId':
+                self.log.order({'msg': 'new order ID', 'orderId': msg['orderId']})
                 self.next_id = msg['orderId']
                 continue
 
