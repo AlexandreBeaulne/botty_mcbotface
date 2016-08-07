@@ -38,7 +38,7 @@ class Bot(object):
         self.host = host
         self.port = port
         self.connection = EClientSocket(Connector(self.instruments, self.msgs))
-        self.next_id = 1
+        self.next_id = None
         self.log = logger
 
     def connect(self):
@@ -66,6 +66,10 @@ class Bot(object):
         while True:
             msg = self.msgs.get()
             self.log.raw(msg)
+
+            if msg['type'] == 'nextValidId':
+                self.next_id = msg['orderId']
+                continue
 
             tick = self.book_builder.process_raw_tick(msg)
 
@@ -95,7 +99,6 @@ class Bot(object):
                                 'action': order.m_action})
                 self.connection.placeOrder(id=self.next_id, contract=c,
                                            order=order)
-                self.next_id += 1
 
 if __name__ == '__main__':
 
