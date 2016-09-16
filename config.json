@@ -49,7 +49,7 @@
         {"symbol": "GLBL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GNC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GOGO", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "GBR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "GBSN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GIII", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GRWC", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "HOME", "currency": "USD", "secType": "STK", "exchange": "SMART"},
