@@ -57,7 +57,7 @@
         {"symbol": "HSGX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "ITEK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "ISLE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "LEI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "LEU", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "LMCA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "LEDS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MCUR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
