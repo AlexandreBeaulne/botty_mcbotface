@@ -76,7 +76,7 @@
         {"symbol": "REN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "RGSE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "RLJE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "SCYX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "SAEX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "SEMI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "SPU", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "SPHS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
