@@ -59,7 +59,7 @@
 * ~~run automatically without intervention (update config + run)~~
 * ~~add 'since' (instead of 'as-of') strategy~~
 * ~~differentiate long and short signal~~
-* handle next valid order ID
+* ~~handle next valid order ID~~
 * code in exits (create contract objects??)
 * fix y-axis of volume in reports' graph
 * develop position management system
