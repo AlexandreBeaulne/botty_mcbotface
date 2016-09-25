@@ -1,9 +1,10 @@
 #!/bin/bash
 
-sudo yum install -y tmux
+sudo yum install -y wget
 sudo yum install -y git
-wget http://repo.continuum.io/archive/Anaconda3-4.1.0-Linux-x86_64.sh
-bash Anaconda3-4.1.0-Linux-x86_64.sh -b
+sudo yum install -y tmux
+wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
+bash Anaconda3-4.1.1-Linux-x86_64.sh -b
 echo "export PATH=$HOME/anaconda3/bin:$PATH" >> $HOME/.bashrc
 git clone https://github.com/blampe/IbPy.git
 cd IbPy/ && $HOME/anaconda3/bin/python setup.py install && cd $HOME
