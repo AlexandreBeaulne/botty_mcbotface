@@ -8,14 +8,7 @@ echo "export PATH=$HOME/anaconda3/bin:$PATH" >> $HOME/.bashrc
 git clone https://github.com/blampe/IbPy.git
 cd IbPy/ && $HOME/anaconda3/bin/python setup.py install && cd $HOME
 $HOME/anaconda3/bin/pip install awscli
-$HOME/anaconda3/bin/conda install -y pylint
 git clone https://github.com/AlexandreBeaulne/botty_mcbotface.git
-cd $HOME/botty_mcbotface/bot/ && git submodule add https://bitbucket.org/AlexandreBeaulne/strategies.git && cd $HOME
-git clone https://bitbucket.org/AlexandreBeaulne/dev.git
-cp dev/.vimrc .
-cp dev/.tmux.conf
-git config --global user.name "Alexandre Beaulne"
-git config --global user.email "alexandre.beaulne@gmail.com"
 
 # missing:
 # * $ aws configure
