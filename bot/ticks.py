@@ -13,7 +13,7 @@ class BBOs(object):
 
     def __init__(self):
         self.num = 0
-        preallocated_size = 10000000
+        preallocated_size = 1000000
         self.ts = np.empty(preallocated_size, dtype='datetime64[us]')
         self.bbos = []
         self.spread = 0
@@ -33,7 +33,7 @@ class Trades(object):
 
     def __init__(self):
         self.num = 0
-        preallocated_size = 1000000
+        preallocated_size = 200000
         self.ts = np.empty(preallocated_size, dtype='datetime64[us]')
         self.trds = []
 
