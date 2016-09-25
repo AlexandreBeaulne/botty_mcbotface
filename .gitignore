@@ -4,6 +4,5 @@
 *.jsonl
 *.json
 *.gz
-bot/strategies/
 reports/index.html
 __pycache__/
