@@ -3,7 +3,6 @@ import io
 import json
 import argparse
 import gzip
-import collections
 import numpy as np
 
 #from bot.strategies.recoil import Recoil
@@ -23,27 +22,37 @@ def process_bbo(line):
             'bid_sz': int(float(bid_sz)), 'bid_px': float(bid_px),
             'ask_px': float(ask_px), 'ask_sz': int(float(ask_sz))}
 
+def my_pop_left(iterator):
+    try:
+        return next(iterator)
+    except StopIteration:
+        return {'ts': np.datetime64('3000-01-01T00:00:00.000000')}
+
 def backtest(strategies, bbos, trds):
 
-    end_of_time = np.datetime64('3000-01-01T00:00:00.000000')
+    next_bbo = None
+    next_trd = None
 
     while bbos or trds:
 
-        next_bbo = bbos[0] if bbos else {'ts': end_of_time}
-        next_trd = trds[0] if trds else {'ts': end_of_time}
+        if not next_bbo:
+            next_bbo = my_pop_left(bbos)
+
+        if not next_trd:
+            next_trd = my_pop_left(trds)
 
         if next_trd['ts'] < next_bbo['ts']:
             for strategy in strategies:
                 signal = strategy.handle_tick(next_trd)
                 if signal:
                     yield signal
-            trds.popleft()
+            next_trd = None
         else:
             for strategy in strategies:
                 signal = strategy.handle_tick(next_bbo)
                 if signal:
                     yield signal
-            bbos.popleft()
+            next_bbo = None
 
 if __name__ == '__main__':
 
@@ -67,14 +76,16 @@ if __name__ == '__main__':
         strategies.append(Recoil2(watch_threshold, watch_duration,
                                   slowdown_threshold, slowdown_duration))
 
-    with io.TextIOWrapper(gzip.open(args.bbos, 'r')) as fh:
-        fh.readline() # skip header
-        bbos = collections.deque((process_bbo(line) for line in fh))
+    fh_bbos = io.TextIOWrapper(gzip.open(args.bbos, 'r'))
+    fh_bbos.readline() # skip header
+    bbos = (process_bbo(line) for line in fh_bbos)
 
-    with io.TextIOWrapper(gzip.open(args.trds, 'r')) as fh:
-        fh.readline() # skip header
-        trds = collections.deque((process_trd(line) for line in fh))
+    fh_trds = io.TextIOWrapper(gzip.open(args.trds, 'r'))
+    fh_trds.readline() # skip header
+    trds = (process_trd(line) for line in fh_trds)
 
     for signal in backtest(strategies, bbos, trds):
         log.order(signal)
 
+    fh_bbos.close()
+    fh_trds.close()

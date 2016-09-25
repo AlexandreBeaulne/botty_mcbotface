@@ -25,10 +25,6 @@ class Recoil2(object):
 
     def satisfy_conditions(self, watch_px, slowdown_px, px):
 
-        if np.isnan(watch_px) or np.isnan(slowdown_px):
-            # means there's no trades old enough to check condns
-            return None
-
         watch_chng = (px - watch_px) / watch_px
         slowdown_chng = (px - slowdown_px) / slowdown_px
 
@@ -68,6 +64,10 @@ class Recoil2(object):
             watch_ts, watch_px = trds.minimum_since(watch_dur_ago)
 
         slowdown_ts, slowdown_px = trds.asof(slowdown_dur_ago)
+
+        if np.isnan(watch_px) or np.isnan(slowdown_px):
+            # means there's no trades old enough to check condns
+            return None
 
         if watch_ts > slowdown_ts:
             return None
