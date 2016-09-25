@@ -60,6 +60,8 @@
 * ~~add 'since' (instead of 'as-of') strategy~~
 * ~~differentiate long and short signal~~
 * ~~handle next valid order ID~~
+* Refactor gridsearch
+* Run another gridsearch
 * code in exits (create contract objects??)
 * fix y-axis of volume in reports' graph
 * develop position management system
