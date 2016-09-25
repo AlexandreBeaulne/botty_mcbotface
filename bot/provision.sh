@@ -1,8 +1,6 @@
 #!/bin/bash
 
-sudo yum install -y wget
-sudo yum install -y git
-sudo yum install -y tmux
+sudo yum install -y wget which bzip2 git tmux
 wget http://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
 bash Anaconda3-4.1.1-Linux-x86_64.sh -b
 echo "export PATH=$HOME/anaconda3/bin:$PATH" >> $HOME/.bashrc
