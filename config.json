@@ -68,7 +68,7 @@
         {"symbol": "MYL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "NYMX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "NVAX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "PIRS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "OPTT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PBYI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PGNX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "PTIE", "currency": "USD", "secType": "STK", "exchange": "SMART"},
