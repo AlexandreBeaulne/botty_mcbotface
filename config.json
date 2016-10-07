@@ -52,7 +52,7 @@
         {"symbol": "GBSN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CPRX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "GWPH", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "HOME", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "HNR", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "HRTX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "HSGX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "ITCI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
