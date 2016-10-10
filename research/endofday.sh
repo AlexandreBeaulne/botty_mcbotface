@@ -12,10 +12,13 @@ echo "backup $DATE log"
 cat $LOG | gzip > $HOME/botty_mcbotface/logs/$LOG.gz
 
 echo "extracting data"
-grep RAW $LOG | python -m research.extract_data
+grep RAW $LOG | python -m research.extract_data $DATE
+
+echo "compressing data"
+gzip $HOME/botty_mcbotface/logs/*.feather
 
 echo "back up market data to AWS S3"
-aws s3 cp $HOME/botty_mcbotface/logs s3://ltcm --recursive
+aws s3 cp $HOME/botty_mcbotface/logs/*.feather s3://ltcm --recursive
 
 echo "generate report"
 python -m research.report --logs $HOME/botty_mcbotface/logs/$LOG.gz

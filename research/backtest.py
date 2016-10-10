@@ -4,55 +4,49 @@ import json
 import argparse
 import gzip
 import numpy as np
+import feather
 
 #from bot.strategies.recoil import Recoil
 from bot.strategies.recoil2 import Recoil2
 from bot.utils import Logger
 
-def process_trd(line):
-    ts, symbol, sz, px = line.split(',')
-    return {'type': 'trd', 'ts': np.datetime64(ts), 'symbol': symbol,
-            'px': float(px), 'sz': int(float(sz))}
-
-def process_bbo(line):
-    ts, symbol, bid_sz, bid_px, ask_px, ask_sz = line.split(',')
-    bid_px = float(bid_px) if bid_px else np.nan
-    ask_px = float(ask_px) if ask_px else np.nan
-    return {'type': 'bbo', 'ts': np.datetime64(ts), 'symbol': symbol,
-            'bid_sz': int(float(bid_sz)), 'bid_px': float(bid_px),
-            'ask_px': float(ask_px), 'ask_sz': int(float(ask_sz))}
-
-def my_pop_left(iterator):
+def peek(iterable):
     try:
-        return next(iterator)
+        return next(iterable)[1]
     except StopIteration:
-        return {'ts': np.datetime64('3000-01-01T00:00:00.000000')}
+        return None
 
-def backtest(strategies, bbos, trds):
+def backtest(strategies, bbos_df, trds_df):
 
-    next_bbo = None
-    next_trd = None
+    bbos = bbos_df.iterrows()
+    trds = trds_df.iterrows()
 
-    while bbos or trds:
+    next_bbo = peek(bbos)
+    next_trd = peek(trds)
 
-        if not next_bbo:
-            next_bbo = my_pop_left(bbos)
+    while not (next_bbo is None and next_trd is None):
 
-        if not next_trd:
-            next_trd = my_pop_left(trds)
-
-        if next_trd['ts'] < next_bbo['ts']:
-            for strategy in strategies:
-                signal = strategy.handle_tick(next_trd)
-                if signal:
-                    yield signal
-            next_trd = None
+        if next_bbo is None:
+            next_tick = next_trd
+            next_tick['type'] = 'trd'
+            next_trd = peek(trds)
+        elif next_trd is None:
+            next_tick = next_bbo
+            next_tick['type'] = 'bbo'
+            next_bbo = peek(bbos)
+        elif next_trd['ts'] < next_bbo['ts']:
+            next_tick = next_trd
+            next_tick['type'] = 'trd'
+            next_trd = peek(trds)
         else:
-            for strategy in strategies:
-                signal = strategy.handle_tick(next_bbo)
-                if signal:
-                    yield signal
-            next_bbo = None
+            next_tick = next_bbo
+            next_tick['type'] = 'bbo'
+            next_bbo = peek(bbos)
+
+        for strategy in strategies:
+            signal = strategy.handle_tick(next_tick)
+            if signal:
+                yield signal
 
 if __name__ == '__main__':
 
@@ -76,16 +70,9 @@ if __name__ == '__main__':
         strategies.append(Recoil2(watch_threshold, watch_duration,
                                   slowdown_threshold, slowdown_duration))
 
-    fh_bbos = io.TextIOWrapper(gzip.open(args.bbos, 'r'))
-    fh_bbos.readline() # skip header
-    bbos = (process_bbo(line) for line in fh_bbos)
+    bbos_df = feather.read_dataframe(args.bbos)
+    trds_df = feather.read_dataframe(args.trds)
 
-    fh_trds = io.TextIOWrapper(gzip.open(args.trds, 'r'))
-    fh_trds.readline() # skip header
-    trds = (process_trd(line) for line in fh_trds)
-
-    for signal in backtest(strategies, bbos, trds):
+    for signal in backtest(strategies, bbos_df, trds_df):
         log.order(signal)
 
-    fh_bbos.close()
-    fh_trds.close()

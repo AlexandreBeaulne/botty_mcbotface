@@ -7,9 +7,6 @@
 ### research/endofday.sh: bash script to complete end of day tasks (backup, report, etc)
     $ bash research/endofday.sh
 
-### research/tests.py: run some unit tests
-    $ python -m research.tests
-
 ### research/extract_data.py: extract market data from log file and append it to CSVs
     $ grep RAW logs/log.YYYYMMDD.jsonl | python -m research.extract_data
 
