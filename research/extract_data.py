@@ -21,6 +21,6 @@ if __name__ == '__main__':
 
     # TRADES
     trds = (tick for tick in ticks if tick and tick['type'] == 'trd')
-    trds = trds[['ts', 'symbol', 'sz', 'px']]
     trds = pd.DataFrame.from_dict(trds).drop('type', axis=1)
+    trds = trds[['ts', 'symbol', 'sz', 'px']]
     feather.write_dataframe(trds, 'logs/trdss.{}.feather'.format(date))
