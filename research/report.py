@@ -16,19 +16,19 @@ from math import floor, ceil
 from datetime import timezone, timedelta, datetime
 
 def unix_ts(ts):
-    return pd.to_datetime(ts).timestamp()
+    return pd.to_pydatetime(ts).timestamp()
 
 def parse_ts(ts):
     # times are in UTC in logs
     return np.datetime64(ts+'+0000')
 
 def pretty_ts(ts, offset=-4):
-    ts = pd.to_datetime(ts).tz_localize('UTC')
+    ts = pd.to_pydatetime(ts).tz_localize('UTC')
     ts = ts.astimezone(timezone(timedelta(hours=offset)))
     return ts.strftime('%A %B %d %Y, %H:%M:%S %Z')
 
 def pretty_date(ts, offset=-4):
-    ts = pd.to_datetime(ts).tz_localize('UTC')
+    ts = pd.to_pydatetime(ts).tz_localize('UTC')
     ts = ts.astimezone(timezone(timedelta(hours=offset)))
     return ts.strftime('%Y%m%d')
 

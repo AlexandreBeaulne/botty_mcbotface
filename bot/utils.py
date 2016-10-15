@@ -23,7 +23,7 @@ def gunzip(filepath):
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.datetime64):
-            return pd.to_datetime(obj).isoformat()
+            return pd.to_pydatetime(obj).isoformat()
         if isinstance(obj, np.float32):
             return float(obj)
         # Let the base class default method raise the TypeError
@@ -40,7 +40,7 @@ class Logger(object):
         msg = copy.deepcopy(msg)
         template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
         if isinstance(msg, dict) and 'ts' in msg:
-            timestamp = msg['ts'].to_datetime().isoformat()
+            timestamp = msg['ts'].to_pydatetime().isoformat()
         else:
             timestamp = ts()
         try:

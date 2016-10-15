@@ -3,7 +3,6 @@
 an exercise in overfitting
 """
 
-import os
 import re
 import glob
 import argparse
@@ -15,7 +14,7 @@ import feather
 
 from bot.strategies.recoil import Recoil
 from bot.strategies.recoil2 import Recoil2
-from bot.utils import Logger, gunzip
+from bot.utils import Logger
 from research.backtest import backtest
 from research.report import compute_outcomes
 
@@ -38,19 +37,13 @@ def backtester(queue):
             params = strategy.params()
             log.operation({'msg': 'backtest', 'params': params})
 
-            bbos_unzipped = gunzip(bbos_file)
-            trds_unzipped = gunzip(trds_file)
-
-            bbos_df = feather.read_dataframe(bbos_unzipped)
+            bbos_df = feather.read_dataframe(bbos_file)
             bbos_df['symbol'] = bbos_df['symbol'].astype('category')
             bbos_df['ts'] = bbos_df['ts'].astype('datetime64[ns]')
 
-            trds_df = feather.read_dataframe(trds_unzipped)
+            trds_df = feather.read_dataframe(trds_file)
             trds_df['symbol'] = trds_df['symbol'].astype('category')
             trds_df['ts'] = trds_df['ts'].astype('datetime64[ns]')
-
-            os.remove(bbos_unzipped)
-            os.remove(trds_unzipped)
 
             signals = backtest([strategy], bbos_df, trds_df)
             results = []
@@ -73,7 +66,7 @@ if __name__ == '__main__':
     log = Logger('gridsearch')
     log.operation('launching parameters grid search')
 
-    pathname = '{}/*.201?????.feather.gz'.format(args.data_dir)
+    pathname = '{}/*.201?????.feather'.format(args.data_dir)
     data_files = glob.glob(pathname)
     dates = set()
     for data_file in data_files:
@@ -82,8 +75,8 @@ if __name__ == '__main__':
             dates.add(result.group())
 
     def file_tuple(data_dir, date):
-        bbos_file = '{}/bbos.{}.feather.gz'.format(data_dir, date)
-        trds_file = '{}/trds.{}.feather.gz'.format(data_dir, date)
+        bbos_file = '{}/bbos.{}.feather'.format(data_dir, date)
+        trds_file = '{}/trds.{}.feather'.format(data_dir, date)
         return bbos_file, trds_file
 
     file_tuples = [file_tuple(args.data_dir, date) for date in dates]
@@ -97,7 +90,9 @@ if __name__ == '__main__':
     # loop over all possibilities
     combos = product(file_tuples, watch_thrshlds, watch_drtns,
                      slowdown_thrshlds, slowdown_drtns)
-    log.operation('# runs: {}'.format(len(combos)))
+    num_runs = len(file_tuples) * len(watch_thrshlds) * len(watch_drtns) * \
+               len(slowdown_thrshlds) * len(slowdown_drtns)
+    log.operation('# runs: {}'.format(num_runs))
     for files, wt, wd, st, sd in combos:
         if sd < wd and st < wt:
             queue.put((files, Recoil2(wt, wd, st, sd)))

@@ -4,5 +4,6 @@
 *.jsonl
 *.json
 *.gz
+*.feather
 reports/index.html
 __pycache__/
