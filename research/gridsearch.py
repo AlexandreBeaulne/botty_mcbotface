@@ -3,20 +3,19 @@
 an exercise in overfitting
 """
 
-import io
+import os
 import re
-import gzip
-import json
 import glob
 import argparse
-import collections
 from multiprocessing import Process, Queue, cpu_count
 from itertools import product
+import numpy as np
 import pandas as pd
+import feather
 
 from bot.strategies.recoil import Recoil
 from bot.strategies.recoil2 import Recoil2
-from bot.utils import Logger
+from bot.utils import Logger, gunzip
 from research.backtest import backtest
 from research.report import compute_outcomes
 
@@ -30,24 +29,30 @@ slowdown_thrshlds = [0.001, 0.002, 0.005, 0.01, 0.02, 0.04]
 slowdown_drtns = [2, 5, 10, 20, 30]
 exit_timeouts = [2, 5, 10, 20, 30, 40, 60, 90, 120]
 
-def backtester(queue, bbos_csv, trds_csv):
-
-    with io.TextIOWrapper(gzip.open(bbos_csv, 'r')) as fh:
-        fh.readline() # skip header
-        bbos = collections.deque((process_bbo(line) for line in fh))
-
-    with io.TextIOWrapper(gzip.open(trds_csv, 'r')) as fh:
-        fh.readline() # skip header
-        trds = collections.deque((process_trd(line) for line in fh))
-
-    trds_df = pd.read_csv(trds_csv, parse_dates=['ts']).set_index('ts')
+def backtester(queue):
 
     while True:
-        strategy = queue.get()
-        if strategy:
+        next_params_set = queue.get()
+        if next_params_set:
+            (bbos_file, trds_file), strategy = next_params_set
             params = strategy.params()
             log.operation({'msg': 'backtest', 'params': params})
-            signals = backtest(strategy, bbos.copy(), trds.copy())
+
+            bbos_unzipped = gunzip(bbos_file)
+            trds_unzipped = gunzip(trds_file)
+
+            bbos_df = feather.read_dataframe(bbos_unzipped)
+            bbos_df['symbol'] = bbos_df['symbol'].astype('category')
+            bbos_df['ts'] = bbos_df['ts'].astype('datetime64[ns]')
+
+            trds_df = feather.read_dataframe(trds_unzipped)
+            trds_df['symbol'] = trds_df['symbol'].astype('category')
+            trds_df['ts'] = trds_df['ts'].astype('datetime64[ns]')
+
+            os.remove(bbos_unzipped)
+            os.remove(trds_unzipped)
+
+            signals = backtest([strategy], bbos_df, trds_df)
             results = []
             for signal in signals:
                 timeouts = [t for t in exit_timeouts if t <= params['watch_duration']]
@@ -55,7 +60,7 @@ def backtester(queue, bbos_csv, trds_csv):
                 results.extend([{**params, **outcome} for outcome in outcomes])
             if results:
                 (pd.DataFrame.from_dict(results)
-                   .to_csv('/dev/shm/gridsearch.csv', index=False, mode='a'))
+                   .to_csv('gridsearch.csv', index=False, mode='a'))
         else:
             break
 
@@ -76,21 +81,28 @@ if __name__ == '__main__':
         if result:
             dates.add(result.group())
 
-    print(dates)
+    def file_tuple(data_dir, date):
+        bbos_file = '{}/bbos.{}.feather.gz'.format(data_dir, date)
+        trds_file = '{}/trds.{}.feather.gz'.format(data_dir, date)
+        return bbos_file, trds_file
 
-#    queue = Queue()
-#    num_workers = cpu_count() - 1
-#    worker = lambda: Process(target=backtester, args=(queue, args.bbos, args.trds))
-#    backtesters = [worker() for i in range(num_workers)]
-#    [backtester.start() for backtester in backtesters]
-#
-#    # loop over all possibilities
-#    combos = product(watch_thrshlds, watch_drtns, slowdown_thrshlds, slowdown_drtns)
-#    for wt, wd, st, sd in combos:
-#        if sd < wd and st < wt:
-#            queue.put(Recoil2(wt, wd, st, sd))
-#
-#    [queue.put(None) for i in range(num_workers)]
-#    queue.close()
-#    [backtester.join() for backtester in backtesters]
+    file_tuples = [file_tuple(args.data_dir, date) for date in dates]
+
+    queue = Queue()
+    num_workers = cpu_count() - 1
+    worker = lambda: Process(target=backtester, args=[queue])
+    backtesters = [worker() for i in range(num_workers)]
+    [backtester.start() for backtester in backtesters]
+
+    # loop over all possibilities
+    combos = product(file_tuples, watch_thrshlds, watch_drtns,
+                     slowdown_thrshlds, slowdown_drtns)
+    log.operation('# runs: {}'.format(len(combos)))
+    for files, wt, wd, st, sd in combos:
+        if sd < wd and st < wt:
+            queue.put((files, Recoil2(wt, wd, st, sd)))
+
+    [queue.put(None) for i in range(num_workers)]
+    queue.close()
+    [backtester.join() for backtester in backtesters]
 

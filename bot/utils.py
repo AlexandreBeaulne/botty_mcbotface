@@ -1,4 +1,5 @@
 
+import gzip
 import copy
 import time
 import json
@@ -11,6 +12,13 @@ def ts():
 
 def now():
     return np.datetime64(ts())
+
+def gunzip(filepath):
+    assert(filepath[-3:] == '.gz')
+    with gzip.open(filepath, mode='rb') as in_fh:
+        with open(filepath[:-3], mode='wb') as out_fh:
+            out_fh.write(in_fh.read())
+    return filepath[:-3]
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):

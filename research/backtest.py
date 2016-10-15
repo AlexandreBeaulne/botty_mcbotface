@@ -3,13 +3,12 @@ import os
 import io
 import json
 import argparse
-import gzip
 import numpy as np
 import feather
 
 #from bot.strategies.recoil import Recoil
 from bot.strategies.recoil2 import Recoil2
-from bot.utils import Logger
+from bot.utils import Logger, gunzip
 
 def peek(iterable):
     try:
@@ -49,13 +48,6 @@ def backtest(strategies, bbos_df, trds_df):
             if signal:
                 yield signal
 
-def gunzip(filepath):
-    assert(filepath[-3:] == '.gz')
-    with gzip.open(filepath, mode='rb') as in_fh:
-        with open(filepath[:-3], mode='wb') as out_fh:
-            out_fh.write(in_fh.read())
-    return filepath[:-3]
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='backtest')
@@ -83,12 +75,11 @@ if __name__ == '__main__':
 
     bbos_df = feather.read_dataframe(bbos_unzipped)
     bbos_df['symbol'] = bbos_df['symbol'].astype('category')
-    bbos_df['ts'] = bbos_df['ts'].astype(np.datetime64)
-
+    bbos_df['ts'] = bbos_df['ts'].astype('datetime64[ns]')
 
     trds_df = feather.read_dataframe(trds_unzipped)
     trds_df['symbol'] = trds_df['symbol'].astype('category')
-    trds_df['ts'] = trds_df['ts'].astype(np.datetime64)
+    trds_df['ts'] = trds_df['ts'].astype('datetime64[ns]')
 
     os.remove(bbos_unzipped)
     os.remove(trds_unzipped)
