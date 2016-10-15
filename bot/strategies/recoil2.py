@@ -75,10 +75,11 @@ class Recoil2(object):
         signal = self.satisfy_conditions(watch_px, slowdown_px, px)
 
         if signal:
-            signal['watch_ts'] = watch_ts
-            metadata = {'msg': 'signal triggered', 'ts': ts,
-                        'symbol': symbol, 'current_px': px,
-                        'slowdown_ts': slowdown_ts, 'slowdown_px': slowdown_px}
+            signal['watch_ts'] = watch_ts.to_datetime().isoformat()
+            metadata = {'msg': 'signal triggered',
+                        'ts': ts, 'symbol': symbol, 'current_px': px,
+                        'slowdown_ts': slowdown_ts.to_datetime().isoformat(),
+                        'slowdown_px': slowdown_px}
             return {**metadata, **signal}
 
     def handle_tick(self, tick):

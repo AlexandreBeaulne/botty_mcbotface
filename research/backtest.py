@@ -25,7 +25,7 @@ def backtest(strategies, bbos_df, trds_df):
     next_bbo = peek(bbos)
     next_trd = peek(trds)
 
-    while not (next_bbo is None and next_trd is None):
+    while next_bbo is not None or next_trd is not None:
 
         if next_bbo is None:
             next_tick = next_trd
@@ -82,7 +82,13 @@ if __name__ == '__main__':
     trds_unzipped = gunzip(args.trds)
 
     bbos_df = feather.read_dataframe(bbos_unzipped)
+    bbos_df['symbol'] = bbos_df['symbol'].astype('category')
+    bbos_df['ts'] = bbos_df['ts'].astype(np.datetime64)
+
+
     trds_df = feather.read_dataframe(trds_unzipped)
+    trds_df['symbol'] = trds_df['symbol'].astype('category')
+    trds_df['ts'] = trds_df['ts'].astype(np.datetime64)
 
     os.remove(bbos_unzipped)
     os.remove(trds_unzipped)

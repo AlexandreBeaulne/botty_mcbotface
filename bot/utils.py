@@ -32,7 +32,7 @@ class Logger(object):
         msg = copy.deepcopy(msg)
         template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
         if isinstance(msg, dict) and 'ts' in msg:
-            timestamp = msg['ts'].tolist().isoformat()
+            timestamp = msg['ts'].to_datetime().isoformat()
         else:
             timestamp = ts()
         try:

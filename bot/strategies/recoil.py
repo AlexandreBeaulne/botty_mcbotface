@@ -62,10 +62,11 @@ class Recoil(object):
         direction = 'long' if watch_chng < 0 else 'short'
         return {'msg': 'signal triggered', 'ts': ts,
                 'symbol': symbol, 'current_px': px,
-                'watch_ts': watch_ts, 'watch_px': watch_px,
-                'direction': direction, 'watch_chng': watch_chng,
-                'slowdown_ts': slowdown_ts, 'slowdown_px': slowdown_px,
-                'slowdown_chng': slowdown_chng}
+                'watch_ts': watch_ts.to_datetime().isoformat(),
+                'watch_px': watch_px, 'direction': direction,
+                'watch_chng': watch_chng,
+                'slowdown_ts': slowdown_ts.to_datetime().isoformat(),
+                'slowdown_px': slowdown_px, 'slowdown_chng': slowdown_chng}
 
     def handle_tick(self, tick):
         if tick['type'] == 'bbo':
