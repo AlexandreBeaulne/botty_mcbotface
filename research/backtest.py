@@ -1,4 +1,5 @@
 
+import os
 import io
 import json
 import argparse
@@ -48,6 +49,13 @@ def backtest(strategies, bbos_df, trds_df):
             if signal:
                 yield signal
 
+def gunzip(filepath):
+    assert(filepath[-3:] == '.gz')
+    with gzip.open(filepath, mode='rb') as in_fh:
+        with open(filepath[:-3], mode='wb') as out_fh:
+            out_fh.write(in_fh.read())
+    return filepath[:-3]
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='backtest')
@@ -70,8 +78,14 @@ if __name__ == '__main__':
         strategies.append(Recoil2(watch_threshold, watch_duration,
                                   slowdown_threshold, slowdown_duration))
 
-    bbos_df = feather.read_dataframe(args.bbos)
-    trds_df = feather.read_dataframe(args.trds)
+    bbos_unzipped = gunzip(args.bbos)
+    trds_unzipped = gunzip(args.trds)
+
+    bbos_df = feather.read_dataframe(bbos_unzipped)
+    trds_df = feather.read_dataframe(trds_unzipped)
+
+    os.remove(bbos_unzipped)
+    os.remove(trds_unzipped)
 
     for signal in backtest(strategies, bbos_df, trds_df):
         log.order(signal)
