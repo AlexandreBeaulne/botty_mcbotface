@@ -1,9 +1,8 @@
 
 import os
-import io
 import json
 import argparse
-import numpy as np
+import pandas as pd
 import feather
 
 #from bot.strategies.recoil import Recoil
@@ -75,11 +74,11 @@ if __name__ == '__main__':
 
     bbos_df = feather.read_dataframe(bbos_unzipped)
     bbos_df['symbol'] = bbos_df['symbol'].astype('category')
-    bbos_df['ts'] = bbos_df['ts'].astype('datetime64[ns]')
+    bbos_df['ts'] = pd.to_datetime(bbos_df['ts'])
 
     trds_df = feather.read_dataframe(trds_unzipped)
     trds_df['symbol'] = trds_df['symbol'].astype('category')
-    trds_df['ts'] = trds_df['ts'].astype('datetime64[ns]')
+    trds_df['ts'] = pd.to_datetime(trds_df['ts'])
 
     os.remove(bbos_unzipped)
     os.remove(trds_unzipped)

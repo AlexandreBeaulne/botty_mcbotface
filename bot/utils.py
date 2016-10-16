@@ -1,7 +1,6 @@
 
 import gzip
 import copy
-import time
 import json
 import numpy as np
 import pandas as pd
@@ -11,7 +10,7 @@ def ts():
     return datetime.utcnow().isoformat()
 
 def now():
-    return np.datetime64(ts())
+    return pd.Timestamp(ts())
 
 def gunzip(filepath):
     assert(filepath[-3:] == '.gz')
@@ -22,7 +21,7 @@ def gunzip(filepath):
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, np.datetime64):
+        if isinstance(obj, pd.Timestamp):
             return pd.to_pydatetime(obj).isoformat()
         if isinstance(obj, np.float32):
             return float(obj)

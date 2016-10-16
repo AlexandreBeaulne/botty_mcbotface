@@ -8,11 +8,10 @@ import glob
 import argparse
 from multiprocessing import Process, Queue, cpu_count
 from itertools import product
-import numpy as np
 import pandas as pd
 import feather
 
-from bot.strategies.recoil import Recoil
+#from bot.strategies.recoil import Recoil
 from bot.strategies.recoil2 import Recoil2
 from bot.utils import Logger
 from research.backtest import backtest
@@ -35,21 +34,22 @@ def backtester(queue):
         if next_params_set:
             (bbos_file, trds_file), strategy = next_params_set
             params = strategy.params()
-            log.operation({'msg': 'backtest', 'params': params})
+            log.operation({'msg': 'backtest', 'params': params,
+                           'bbos': bbos_file, 'trds': trds_file})
 
             bbos_df = feather.read_dataframe(bbos_file)
             bbos_df['symbol'] = bbos_df['symbol'].astype('category')
-            bbos_df['ts'] = bbos_df['ts'].astype('datetime64[ns]')
+            bbos_df['ts'] = pd.to_datetime(bbos_df['ts'])
 
             trds_df = feather.read_dataframe(trds_file)
             trds_df['symbol'] = trds_df['symbol'].astype('category')
-            trds_df['ts'] = trds_df['ts'].astype('datetime64[ns]')
+            trds_df['ts'] = pd.to_datetime(trds_df['ts'])
+            trds_df.index = trds_df['ts']
 
             signals = backtest([strategy], bbos_df, trds_df)
             results = []
             for signal in signals:
-                timeouts = [t for t in exit_timeouts if t <= params['watch_duration']]
-                outcomes = compute_outcomes(signal, trds_df, timeouts)
+                outcomes = compute_outcomes(signal, trds_df, exit_timeouts)
                 results.extend([{**params, **outcome} for outcome in outcomes])
             if results:
                 (pd.DataFrame.from_dict(results)
@@ -90,9 +90,10 @@ if __name__ == '__main__':
     # loop over all possibilities
     combos = product(file_tuples, watch_thrshlds, watch_drtns,
                      slowdown_thrshlds, slowdown_drtns)
-    num_runs = len(file_tuples) * len(watch_thrshlds) * len(watch_drtns) * \
-               len(slowdown_thrshlds) * len(slowdown_drtns)
-    log.operation('# runs: {}'.format(num_runs))
+    combos = [(fs, wt, wd, st, sd)
+              for (fs, wt, wd, st, sd) in combos
+              if sd < wd and st < wt]
+    log.operation('# runs: {}'.format(len(combos)))
     for files, wt, wd, st, sd in combos:
         if sd < wd and st < wt:
             queue.put((files, Recoil2(wt, wd, st, sd)))
