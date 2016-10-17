@@ -40,6 +40,7 @@ class Logger(object):
         template = '{{"ts": "{}", "type": "{}", "msg": {}}}\n'
         if isinstance(msg, dict) and 'ts' in msg:
             timestamp = msg['ts'].to_pydatetime().isoformat()
+            msg['ts'] = timestamp
         else:
             timestamp = ts()
         try:
