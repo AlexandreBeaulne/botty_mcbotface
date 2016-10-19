@@ -26,7 +26,7 @@
         {"symbol": "BLDP", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "BSPM", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CARA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "CBMX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "CERU", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "COLL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CONN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "CDTX", "currency": "USD", "secType": "STK", "exchange": "SMART"},
