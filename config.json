@@ -61,7 +61,7 @@
         {"symbol": "LMCA", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "LPCN", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MOBL", "currency": "USD", "secType": "STK", "exchange": "SMART"},
-        {"symbol": "MGT", "currency": "USD", "secType": "STK", "exchange": "SMART"},
+        {"symbol": "MGTI", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MPET", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MACK", "currency": "USD", "secType": "STK", "exchange": "SMART"},
         {"symbol": "MRNS", "currency": "USD", "secType": "STK", "exchange": "SMART"},
