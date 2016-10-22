@@ -43,6 +43,7 @@ class Logger(object):
             msg['ts'] = timestamp
         else:
             timestamp = ts()
+        msg['ts'] = timestamp
         try:
             serialized_msg = json.dumps(msg, cls=NumpyEncoder)
         except:
