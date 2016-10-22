@@ -9,41 +9,25 @@ import feather
 from bot.strategies.recoil2 import Recoil2
 from bot.utils import Logger, gunzip
 
-def peek(iterable):
-    try:
-        return next(iterable)[1]
-    except StopIteration:
-        return None
-
-def backtest(strategies, bbos_df, trds_df):
-
-    bbos = bbos_df.iterrows()
-    trds = trds_df.iterrows()
-
-    next_bbo = peek(bbos)
-    next_trd = peek(trds)
-
-    while next_bbo is not None or next_trd is not None:
-
-        if next_bbo is None:
-            next_tick = next_trd
-            next_tick['type'] = 'trd'
-            next_trd = peek(trds)
-        elif next_trd is None:
-            next_tick = next_bbo
-            next_tick['type'] = 'bbo'
-            next_bbo = peek(bbos)
-        elif next_trd['ts'] < next_bbo['ts']:
-            next_tick = next_trd
-            next_tick['type'] = 'trd'
-            next_trd = peek(trds)
+def zip(bbos, trds):
+    ticks = []
+    while bbos or trds:
+        if not bbos:
+            ticks.append(trds.pop())
+        elif not trds:
+            ticks.append(bbos.pop())
+        elif bbos[0]['ts'] < trds[0]['ts']:
+            ticks.append(bbos.pop())
         else:
-            next_tick = next_bbo
-            next_tick['type'] = 'bbo'
-            next_bbo = peek(bbos)
+            ticks.append(trds.pop())
+    return ticks
 
+def backtest(strategies, ticks):
+
+    while ticks:
+        tick = ticks.pop()
         for strategy in strategies:
-            signal = strategy.handle_tick(next_tick)
+            signal = strategy.handle_tick(tick)
             if signal:
                 yield signal
 
@@ -75,14 +59,18 @@ if __name__ == '__main__':
     bbos_df = feather.read_dataframe(bbos_unzipped)
     bbos_df['symbol'] = bbos_df['symbol'].astype('category')
     bbos_df['ts'] = pd.to_datetime(bbos_df['ts'])
+    bbos_df['type'] = 'bbo'
 
     trds_df = feather.read_dataframe(trds_unzipped)
     trds_df['symbol'] = trds_df['symbol'].astype('category')
     trds_df['ts'] = pd.to_datetime(trds_df['ts'])
+    trds_df['type'] = 'trd'
 
     os.remove(bbos_unzipped)
     os.remove(trds_unzipped)
 
-    for signal in backtest(strategies, bbos_df, trds_df):
+    ticks = zip(bbos_df.to_dict(orient='records'), trds_df.to_dict(orient='records'))
+
+    for signal in backtest(strategies, ticks):
         log.order(signal)
 

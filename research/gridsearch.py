@@ -14,7 +14,7 @@ import feather
 #from bot.strategies.recoil import Recoil
 from bot.strategies.recoil2 import Recoil2
 from bot.utils import Logger
-from research.backtest import backtest
+from research.backtest import backtest, zip
 from research.report import compute_outcomes
 
 COLS = ['watch_threshold', 'watch_duration', 'slowdown_threshold',
@@ -40,13 +40,20 @@ def backtester(queue):
             bbos_df = feather.read_dataframe(bbos_file)
             bbos_df['symbol'] = bbos_df['symbol'].astype('category')
             bbos_df['ts'] = pd.to_datetime(bbos_df['ts'])
+            bbos_df['type'] = 'bbo'
 
             trds_df = feather.read_dataframe(trds_file)
             trds_df['symbol'] = trds_df['symbol'].astype('category')
             trds_df['ts'] = pd.to_datetime(trds_df['ts'])
+            trds_df['type'] = 'trd'
+
+            ticks = zip(bbos_df.to_dict(orient='records'),
+                        trds_df.to_dict(orient='records'))
+
+            signals = backtest([strategy], ticks)
+
             trds_df.index = trds_df['ts']
 
-            signals = backtest([strategy], bbos_df, trds_df)
             results = []
             for signal in signals:
                 outcomes = compute_outcomes(signal, trds_df, exit_timeouts)
@@ -95,8 +102,7 @@ if __name__ == '__main__':
               if sd < wd and st < wt]
     log.operation('# runs: {}'.format(len(combos)))
     for files, wt, wd, st, sd in combos:
-        if sd < wd and st < wt:
-            queue.put((files, Recoil2(wt, wd, st, sd)))
+        queue.put((files, Recoil2(wt, wd, st, sd)))
 
     [queue.put(None) for i in range(num_workers)]
     queue.close()
