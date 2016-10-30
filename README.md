@@ -25,6 +25,11 @@
 ### bot/provision.sh: sketch of a bash script to provision a server for bot
     $ bash bot/provision.sh
 
+### Profile some module
+    $ export PYTHONPATH=${PYTHONPATH}:/path/to/botty_mcbotface/
+    $ python -m cProfile -s tottime module_to_profile.py | tee profile.txt
+    $ less profile.txt
+
 ## TODO
 * ~~setup connection with IB's TWS~~
 * ~~handle inbound market data~~

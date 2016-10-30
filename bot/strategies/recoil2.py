@@ -52,7 +52,7 @@ class Recoil2(object):
         trds = self.trds[symbol]
 
         # check if spread small enough
-        if bbos.spread > px / 20:
+        if bbos.spread() > px / 20:
             return None
 
         watch_dur_ago = ts - np.timedelta64(self.watch_dur, 's')

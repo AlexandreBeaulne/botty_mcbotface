@@ -16,18 +16,21 @@ class BBOs(object):
         preallocated_size = 1000000
         self.ts = np.empty(preallocated_size, dtype='datetime64[us]')
         self.bbos = []
-        self.spread = 0
 
-    def new_bbo(self, bbo, factor=0.2):
+    def new_bbo(self, bbo):
         self.ts[self.num] = bbo['ts']
         self.bbos.append(bbo)
         self.num += 1
-        if bbo['ask_px'] and bbo['bid_px']:
-            spread = bbo['ask_px'] - bbo['bid_px']
-            self.spread = (1 - factor) * self.spread + factor * spread
 
     def current_bbo(self):
         return self.bbos[-1]
+
+    def spread(self):
+        if self.num:
+            bbo = self.current_bbo()
+            if bbo['ask_px'] and bbo['bid_px']:
+                return bbo['ask_px'] - bbo['bid_px']
+        return 1000000 # arbitrary large spread
 
 class Trades(object):
 
@@ -63,4 +66,3 @@ class Trades(object):
             min_px, min_ts = min(prices)
             return (min_ts, min_px)
         return (np.nan, np.nan)
-

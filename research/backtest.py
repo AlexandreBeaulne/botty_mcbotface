@@ -16,16 +16,14 @@ def zip(bbos, trds):
             ticks.append(trds.pop())
         elif not trds:
             ticks.append(bbos.pop())
-        elif bbos[0]['ts'] < trds[0]['ts']:
+        elif bbos[-1]['ts'] > trds[-1]['ts']:
             ticks.append(bbos.pop())
         else:
             ticks.append(trds.pop())
-    return ticks
+    return reversed(ticks)
 
 def backtest(strategies, ticks):
-
-    while ticks:
-        tick = ticks.pop()
+    for tick in ticks:
         for strategy in strategies:
             signal = strategy.handle_tick(tick)
             if signal:
@@ -69,7 +67,8 @@ if __name__ == '__main__':
     os.remove(bbos_unzipped)
     os.remove(trds_unzipped)
 
-    ticks = zip(bbos_df.to_dict(orient='records'), trds_df.to_dict(orient='records'))
+    ticks = zip(bbos_df.to_dict(orient='records'),
+                trds_df.to_dict(orient='records'))
 
     for signal in backtest(strategies, ticks):
         log.order(signal)
