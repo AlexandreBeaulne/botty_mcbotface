@@ -12,24 +12,15 @@ import bisect
 class BBOs(object):
 
     def __init__(self):
-        self.num = 0
-        preallocated_size = 1000000
-        self.ts = np.empty(preallocated_size, dtype='datetime64[us]')
-        self.bbos = []
+        self.bbo = None
 
     def new_bbo(self, bbo):
-        self.ts[self.num] = bbo['ts']
-        self.bbos.append(bbo)
-        self.num += 1
-
-    def current_bbo(self):
-        return self.bbos[-1]
+        # only keep last bbo, no need for history atm
+        self.bbo = bbo
 
     def spread(self):
-        if self.num:
-            bbo = self.current_bbo()
-            if bbo['ask_px'] and bbo['bid_px']:
-                return bbo['ask_px'] - bbo['bid_px']
+        if self.bbo and self.bbo['ask_px'] and self.bbo['bid_px']:
+            return self.bbo['ask_px'] - self.bbo['bid_px']
         return 1000000 # arbitrary large spread
 
 class Trades(object):

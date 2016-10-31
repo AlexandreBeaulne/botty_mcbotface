@@ -95,7 +95,7 @@ class Recoil2(object):
             return # don't short sell for now
 
         symbol = signal['symbol']
-        current_bbo = self.bbos[symbol].current_bbo()
+        current_bbo = self.bbos[symbol].bbo
         order = Order()
         order.m_totalQuantity = 10
         order.m_orderType = 'LMT'
