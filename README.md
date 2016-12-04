@@ -1,4 +1,6 @@
 
+## Status: MOTHBALLED
+
 ## Rundown of executables
 
 ### bot/bot.py: run the bot
